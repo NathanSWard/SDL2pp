@@ -18,10 +18,12 @@ class texture;
  * @brief 
  */ 
 class texture_lock {
-    friend class texture;
     SDL_Texture* const texture_;
     void* const pixels_;
     int const pitch_;
+
+    friend class texture;
+
     constexpr texture_lock(SDL_Texture* const t, void* const pix, int const pitch) noexcept
         : texture_(t), pixels_(pix), pitch_(pitch) {}
 
@@ -43,7 +45,7 @@ public:
     constexpr int pitch() const noexcept { return pitch_; }
 
     /**
-     * @brief Get access to the pixels.
+     * @brief Get access to the locked texture's pixels.
      * @return Pointer to the pixel data.
      */ 
     constexpr void* pixels() const noexcept { return pixels_; }
@@ -90,8 +92,8 @@ public:
     static std::optional<texture> create(renderer& r, null_term_string file) noexcept;
 
     /**
-     * @brief
-     * @param t
+     * @brief Constructer for interfacing with SDL's C API.
+     * @param t An SDL_Texture struct to take ownership of.
     */
     constexpr texture(SDL_Texture& t) noexcept 
         : texture_(std::addressof(t)) {}

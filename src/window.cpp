@@ -1,4 +1,4 @@
-#include "window.hpp"
+#include "../include/window.hpp"
 
 using namespace sdl2;
 
@@ -6,7 +6,7 @@ std::optional<window> window::create(null_term_string const title, xy<int> const
                                     wh<int> const wh, window_flags const flgs) noexcept 
 {
     if (auto const win = SDL_CreateWindow(title.data(), xy.x, xy.y, wh.width, wh.height, static_cast<std::uint32_t>(flgs)); win != nullptr)
-        return window(*win);
+        return window{*win};
     return {};
 }
 
@@ -14,7 +14,7 @@ std::optional<window> window::copy(window const& other) noexcept {
     auto const [x, y] = other.position();
     auto const [w, h] = other.size();
     if (auto const win = SDL_CreateWindow(other.title().data(), x, y, w, h, static_cast<std::uint32_t>(other.flags())); win != nullptr)
-        return window(*win);
+        return window{*win};
     return {};
 }
 
@@ -169,21 +169,22 @@ void window::set_grabbed(bool const grabbed) noexcept {
 
 template<bool Const>
 static SDL_HitTestResult _hit_test_wrapper(SDL_Window* win, SDL_Point const* const area, void* const func) {
+    SDL2_ASSERT(win != nullptr && area != nullptr && func != nullptr);
     if constexpr (Const) {
-        auto const fn = reinterpret_cast<function_ref<SDL_HitTestResult(window const&, SDL_Point const&)> const*>(func);
-        return (*fn)(*reinterpret_cast<window const*>(win), *area);
+        auto const fn = reinterpret_cast<function_ref<SDL_HitTestResult(window const&, point<int>)> const*>(func);
+        return (*fn)(*reinterpret_cast<window const*>(win), point<int>{*area});
     }
     else {
-        auto const fn = reinterpret_cast<function_ref<SDL_HitTestResult(window&, SDL_Point const&)> const*>(func);
-        return (*fn)(*reinterpret_cast<window*>(win), *area);
+        auto const fn = reinterpret_cast<function_ref<SDL_HitTestResult(window&, point<int>)> const*>(func);
+        return (*fn)(*reinterpret_cast<window*>(win), point<int>{*area});
     }
 }
 
-bool window::set_hit_test(function_ref<SDL_HitTestResult(window&, SDL_Point const&)> const fn) noexcept {
+bool window::set_hit_test(function_ref<SDL_HitTestResult(window&, point<int>)> const fn) noexcept {
     return SDL_SetWindowHitTest(window_, _hit_test_wrapper<false>, const_cast<void*>(static_cast<void const*>(std::addressof(fn)))) == 0;
 }
 
-bool window::set_hit_test(function_ref<SDL_HitTestResult(window const&, SDL_Point const&)> const fn) noexcept {
+bool window::set_hit_test(function_ref<SDL_HitTestResult(window const&, point<int>)> const fn) noexcept {
     return SDL_SetWindowHitTest(window_, _hit_test_wrapper<true>, const_cast<void*>(static_cast<void const*>(std::addressof(fn)))) == 0;
 }
 
@@ -242,6 +243,6 @@ bool window::update_surface() noexcept {
     return SDL_UpdateWindowSurface(window_) == 0;
 }
 
-bool window::update_surface_rects(std::span<SDL_Rect const> const rects) noexcept {
-    return SDL_UpdateWindowSurfaceRects(window_, rects.data(), rects.size());
+bool window::update_surface_rects(std::span<rect<int> const> const rects) noexcept {
+    return SDL_UpdateWindowSurfaceRects(window_, rects.data()->native_handle(), rects.size());
 }

@@ -4,7 +4,7 @@
 #include <concepts>
 #include <type_traits>
 
-#include "utility.hpp"
+#include "util.hpp"
 
 namespace sdl2 {
 
@@ -28,8 +28,8 @@ public:
     constexpr rect& operator=(rect const&) noexcept = default;
     constexpr rect& operator=(rect&&) noexcept = default;
 
-    constexpr auto const& get() const noexcept { return rect_; }
-    constexpr auto& get() noexcept { return rect_; }
+    constexpr sdl_rect_t const* native_handle() const noexcept { return &rect_; }
+    constexpr sdl_rect_t* native_handle() noexcept { return &rect_; }
 
     constexpr auto const& x() const noexcept { return rect_.x; }
     constexpr auto const& y() const noexcept { return rect_.y; }
@@ -48,7 +48,7 @@ public:
     constexpr xy<T> bottom_left() const noexcept { return {rect_.x, rect_.y + rect_.h}; };
     constexpr xy<T> bottom_right() const noexcept { return {rect_.x + rect_.w, rect_.y + rect_.h}; };
     constexpr xy<T> center() const noexcept { 
-        return {rect_.x + rect_.w / T{2}, rect_.y + rect_.h / T{2});
+        return {rect_.x + rect_.w / T{2}, rect_.y + rect_.h / T{2}};
     }
 
     template<std::size_t I>
@@ -57,7 +57,7 @@ public:
         else if constexpr (I == 1) return y();
         else if constexpr (I == 2) return w();
         else if constexpr (I == 3) return h();
-        else static_assert(false, "invalid sdl2::rect::get<I>() index");
+        else static_assert(always_false<T>::value, "invalid sdl2::rect::get<I>() index");
     }
 
     template<std::size_t I>
@@ -66,7 +66,7 @@ public:
         else if constexpr (I == 1) return y();
         else if constexpr (I == 2) return w();
         else if constexpr (I == 3) return h();
-        else static_assert(false, "invalid sdl2::rect::get<I>() index");
+        else static_assert(always_false<T>::value, "invalid sdl2::rect::get<I>() index");
     }
 
 };
@@ -88,8 +88,8 @@ public:
     constexpr point& operator=(point const&) noexcept = default;
     constexpr point& operator=(point&&) noexcept = default;
 
-    constexpr auto const& get() const noexcept { return point_; }
-    constexpr auto& get() noexcept { return point_; }
+    constexpr sdl_point_t const* native_handle() const noexcept { return &point_; }
+    constexpr sdl_point_t* native_handle() noexcept { return &point_; }
 
     constexpr auto const& x() const noexcept { return point_.x; }
     constexpr auto& x() noexcept { return point_.x; }
@@ -100,14 +100,14 @@ public:
     constexpr auto& get() noexcept {
         if constexpr (I == 0) return x();
         else if constexpr (I == 1) return y();
-        else static_assert(false, "invalid sdl2::point::get<I>() index");
+        else static_assert(always_false<T>::value, "invalid sdl2::point::get<I>() index");
     }
 
     template<std::size_t I>
     constexpr auto const& get() const noexcept {
         if constexpr (I == 0) return x();
         else if constexpr (I == 1) return y();
-        else static_assert(false, "invalid sdl2::point::get<I>() index");
+        else static_assert(always_false<T>::value, "invalid sdl2::point::get<I>() index");
     }
 };
 

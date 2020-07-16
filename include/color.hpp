@@ -166,7 +166,7 @@ class pixel_color {
 public:
     constexpr explicit pixel_color(std::uint32_t const col) noexcept : col_(col) {}
 
-    constexpr explicit operator std::uint32_t() const noexcept { return col_; }
+    constexpr operator std::uint32_t() const noexcept { return col_; }
     constexpr std::uint32_t value() const noexcept { return col_; }
 
     explicit pixel_color(pixel_format const& fmt, rgb<std::uint8_t> const rgb) noexcept 

@@ -108,35 +108,35 @@ public:
     }
 
     bool copy(rect<int> const& render_rect, texture const& txr, rect<int> const& txr_rect) noexcept {
-        return SDL_RenderCopy(renderer_, txr.native_handle(), &txr_rect.get(), &render_rect.get()) == 0;
+        return SDL_RenderCopy(renderer_, txr.native_handle(), txr_rect.native_handle(), render_rect.native_handle()) == 0;
     }
     bool copy(texture const& txr, rect<int> const& txr_rect) noexcept {
-        return SDL_RenderCopy(renderer_, txr.native_handle(), &txr_rect.get(), nullptr) == 0;
+        return SDL_RenderCopy(renderer_, txr.native_handle(), txr_rect.native_handle(), nullptr) == 0;
     }
     bool copy(rect<int> const& render_rect, texture const& txr) noexcept {
-        return SDL_RenderCopy(renderer_, txr.native_handle(), nullptr, &render_rect.get()) == 0;
+        return SDL_RenderCopy(renderer_, txr.native_handle(), nullptr, render_rect.native_handle()) == 0;
     }
     bool copy(texture const& txr) noexcept {
         return SDL_RenderCopy(renderer_, txr.native_handle(), nullptr, nullptr) == 0;
     }
 
     bool copy_ex(rect<int> const& render_rect, texture const& txr, rect<int> const& txr_rect, double const angle, point<int> const& center, renderer_flip const flip = renderer_flip::NONE) noexcept {
-        return SDL_RenderCopyEx(renderer_, txr.native_handle(), &txr_rect.get(), &render_rect.get(), angle, &center.get(), static_cast<SDL_RendererFlip>(flip)) == 0;
+        return SDL_RenderCopyEx(renderer_, txr.native_handle(), txr_rect.native_handle(), render_rect.native_handle(), angle, center.native_handle(), static_cast<SDL_RendererFlip>(flip)) == 0;
     }
     bool copy_ex(texture const& txr, rect<int> const& txr_rect, double const angle, point<int> const& center, renderer_flip const flip = renderer_flip::NONE) noexcept {
-        return SDL_RenderCopyEx(renderer_, txr.native_handle(), &txr_rect.get(), nullptr, angle, &center.get(), static_cast<SDL_RendererFlip>(flip)) == 0;
+        return SDL_RenderCopyEx(renderer_, txr.native_handle(), txr_rect.native_handle(), nullptr, angle, center.native_handle(), static_cast<SDL_RendererFlip>(flip)) == 0;
     }
     bool copy_ex(rect<int> const& render_rect, texture const& txr, double const angle, point<int> const& center, renderer_flip const flip = renderer_flip::NONE) noexcept {
-        return SDL_RenderCopyEx(renderer_, txr.native_handle(), nullptr, &render_rect.get(), angle, &center.get(), static_cast<SDL_RendererFlip>(flip)) == 0;
+        return SDL_RenderCopyEx(renderer_, txr.native_handle(), nullptr, render_rect.native_handle(), angle, center.native_handle(), static_cast<SDL_RendererFlip>(flip)) == 0;
     }
     bool copy_ex(texture const& txr, double const angle, point<int> const& center, renderer_flip const flip = renderer_flip::NONE) noexcept {
-        return SDL_RenderCopyEx(renderer_, txr.native_handle(), nullptr, nullptr, angle, &center.get(), static_cast<SDL_RendererFlip>(flip)) == 0;
+        return SDL_RenderCopyEx(renderer_, txr.native_handle(), nullptr, nullptr, angle, center.native_handle(), static_cast<SDL_RendererFlip>(flip)) == 0;
     }
     bool copy_ex(texture const& txr, rect<int> const& txr_rect, double const angle, renderer_flip const flip = renderer_flip::NONE) noexcept {
-        return SDL_RenderCopyEx(renderer_, txr.native_handle(), &txr_rect.get(), nullptr, angle, nullptr, static_cast<SDL_RendererFlip>(flip)) == 0;
+        return SDL_RenderCopyEx(renderer_, txr.native_handle(), txr_rect.native_handle(), nullptr, angle, nullptr, static_cast<SDL_RendererFlip>(flip)) == 0;
     }
     bool copy_ex(rect<int> const& render_rect, texture const& txr, double const angle, renderer_flip const flip = renderer_flip::NONE) noexcept {
-        return SDL_RenderCopyEx(renderer_, txr.native_handle(), nullptr, &render_rect.get(), angle, nullptr, static_cast<SDL_RendererFlip>(flip)) == 0;
+        return SDL_RenderCopyEx(renderer_, txr.native_handle(), nullptr, render_rect.native_handle(), angle, nullptr, static_cast<SDL_RendererFlip>(flip)) == 0;
     }
     bool copy_ex(texture const& txr, double const angle, renderer_flip const flip = renderer_flip::NONE) noexcept {
         return SDL_RenderCopyEx(renderer_, txr.native_handle(), nullptr, nullptr, angle, nullptr, static_cast<SDL_RendererFlip>(flip)) == 0;
@@ -153,9 +153,9 @@ public:
     template<class Rep>
     bool draw_lines(std::span<point<Rep> const> const points) noexcept {
         if constexpr (std::is_same_v<Rep, int>)
-            return SDL_RenderDrawLines(renderer_, &points.data().get(), static_cast<int>(points.size())) == 0;
+            return SDL_RenderDrawLines(renderer_, points.data()->native_handle(), static_cast<int>(points.size())) == 0;
         else
-            return SDL_RenderDrawLinesF(renderer_, &points.data().get(), static_cast<int>(points.size())) == 0;
+            return SDL_RenderDrawLinesF(renderer_, points.data()->native_handle(), static_cast<int>(points.size())) == 0;
     }
 
     template<class Rep>
@@ -169,46 +169,46 @@ public:
     template<class Rep>
     bool draw_points(std::span<point<Rep> const> const points) noexcept {
         if constexpr (std::is_same_v<Rep, int>)
-            return SDL_RenderDrawPoints(renderer_, &points.data().get(), static_cast<int>(points.size())) == 0;
+            return SDL_RenderDrawPoints(renderer_, points.data()->native_handle(), static_cast<int>(points.size())) == 0;
         else
-            return SDL_RenderDrawPointsF(renderer_, &points.data().get(), static_cast<int>(points.size())) == 0;
+            return SDL_RenderDrawPointsF(renderer_, points.data()->native_handle(), static_cast<int>(points.size())) == 0;
     }
 
     template<class Rep>
     bool draw_rect(rect<Rep> const& r) noexcept {
         if constexpr (std::is_same_v<Rep, int>)
-            return SDL_RenderDrawRect(renderer_, &r.get()) == 0;
+            return SDL_RenderDrawRect(renderer_, r.native_handle()) == 0;
         else
-            return SDL_RenderDrawRectF(renderer_, &r.get()) == 0;
+            return SDL_RenderDrawRectF(renderer_, r.native_handle()) == 0;
     }
 
     template<class Rep>
     bool draw_rects(std::span<rect<Rep> const> const r) noexcept {
         if constexpr (std::is_same_v<Rep, int>)
-            return SDL_RenderDrawRects(renderer_, &r.data().get(), static_cast<int>(r.size())) == 0;
+            return SDL_RenderDrawRects(renderer_, r.data().native_handle(), static_cast<int>(r.size())) == 0;
         else
-            return SDL_RenderDrawRectsF(renderer_, &r.data().get(), static_cast<int>(r.size())) == 0;
+            return SDL_RenderDrawRectsF(renderer_, r.data().native_handle(), static_cast<int>(r.size())) == 0;
     }
 
     template<class Rep>
     bool fill_rect(rect<Rep> const& r) noexcept {
         if constexpr (std::is_same_v<Rep, int>)
-            return SDL_RenderFillRect(renderer_, &r.get()) == 0;
+            return SDL_RenderFillRect(renderer_, r.native_handle()) == 0;
         else
-            return SDL_RenderFillRectF(renderer_, &r.get()) == 0;
+            return SDL_RenderFillRectF(renderer_, r.native_handle()) == 0;
     }
 
     template<class Rep>
     bool fill_rects(std::span<rect<Rep> const> const r) noexcept {
         if constexpr (std::is_same_v<Rep, int>)
-            return SDL_RenderFillRects(renderer_, &r.data().get(), static_cast<int>(r.size())) == 0;
+            return SDL_RenderFillRects(renderer_, r.data().native_handle(), static_cast<int>(r.size())) == 0;
         else
-            return SDL_RenderFillRectsF(renderer_, &r.data().get(), static_cast<int>(r.size())) == 0;
+            return SDL_RenderFillRectsF(renderer_, r.data().native_handle(), static_cast<int>(r.size())) == 0;
     }
 
     rect<int> clip_rect() const noexcept {
         rect<int> r;
-        SDL_RenderGetClipRect(renderer_, &r.get());
+        SDL_RenderGetClipRect(renderer_, r.native_handle());
         return r;
     }
 
@@ -230,7 +230,7 @@ public:
 
     rect<int> viewport() const noexcept {
         rect<int> r;
-        SDL_RenderGetViewport(renderer_, &r.get());
+        SDL_RenderGetViewport(renderer_, r.native_handle());
         return r;
     }
 
@@ -243,20 +243,20 @@ public:
     }
 
     bool read_pixels(rect<int> const& r, pixel_format_enum const fmt, void* const pixels, int const pitch) const noexcept {
-        return SDL_RenderReadPixels(renderer_, &r.get(), static_cast<std::uint32_t>(fmt), pixels, pitch) == 0;
+        return SDL_RenderReadPixels(renderer_, r.native_handle(), static_cast<std::uint32_t>(fmt), pixels, pitch) == 0;
     }
     bool read_pixels(pixel_format_enum const fmt, void* const pixels, int const pitch) const noexcept {
         return SDL_RenderReadPixels(renderer_, nullptr, static_cast<std::uint32_t>(fmt), pixels, pitch) == 0;
     }
     bool read_pixels(rect<int> const& r, void* const pixels, int const pitch) const noexcept {
-        return SDL_RenderReadPixels(renderer_, &r.get(), 0, pixels, pitch) == 0;
+        return SDL_RenderReadPixels(renderer_, r.native_handle(), 0, pixels, pitch) == 0;
     }
     bool read_pixels(void* const pixels, int const pitch) const noexcept {
         return SDL_RenderReadPixels(renderer_, nullptr, 0, pixels, pitch) == 0;
     }
 
     bool set_clip_rect(rect<int> const& clip) noexcept {
-        return SDL_RenderSetClipRect(renderer_, &clip.get()) == 0;
+        return SDL_RenderSetClipRect(renderer_, clip.native_handle()) == 0;
     }
     bool disable_clipping() noexcept {
         return SDL_RenderSetClipRect(renderer_, nullptr) == 0;
@@ -275,7 +275,7 @@ public:
     }
 
     bool set_viewport(rect<int> const& r) noexcept {
-        return SDL_RenderSetViewport(renderer_, &r.get()) == 0;
+        return SDL_RenderSetViewport(renderer_, r.native_handle()) == 0;
     }
     bool reset_viewport() noexcept {
         return SDL_RenderSetViewport(renderer_, nullptr) == 0;

@@ -4,6 +4,7 @@
 #include <SDL2/SDL_syswm.h>
 
 #include "enums.hpp"
+#include "shapes.hpp"
 #include "surface.hpp"
 #include "util.hpp"
 
@@ -16,7 +17,7 @@
 namespace sdl2 {
 
 /**
- * @brief 
+ * @brief A wrapper around an SDL_Window structure.
  */ 
 class window {
     SDL_Window* window_;
@@ -52,12 +53,12 @@ public:
         : window_(std::exchange(other.window_, nullptr)) {}
 
     /**
-     *
+     * @brief An xy position denoting a centered window.
      */
     static constexpr xy<int> pos_centered{SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED};
 
     /**
-     * 
+     * @brief An xy position denoting an undefined window position.
      */
     static constexpr xy<int> pos_undefined{SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED};
 
@@ -137,244 +138,248 @@ public:
     rgb<std::array<std::uint16_t, 256>> gamma_ramp() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief Check if this window is grabbed.
+     * @return A bool denoting if this window is grabbed.
      */
     bool is_grabbed() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief Get this window's id.
+     * @return The window's id.
      */
     std::uint32_t id() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief Get the maximum size of the window.
+     * @return The maximum size of the window.
      */
     wh<int> maximum_size() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief Get the minimum size of the window.
+     * @return The minimum size of the window.
      */
     wh<int> minimum_size() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief Get the opacticy of the window.
+     * @return The opacity of the window.
      */
     float opacity() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief The the pixel format of the window.
+     * @return the pixel format of the window.
      */
     pixel_format_enum pixel_format() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief The the current position of the window.
+     * @return The x/y cords of the window.
      */
     xy<int> position() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief Get the current size of the window.
+     * @return The width and height of the window.
      */
     wh<int> size() const noexcept;
 
     // SDL_GetWindowSurface - TODO
 
     /**
-     * @brief 
-     * @return
+     * @brief Get the current title of the window.
+     * @return The title of the window.
      */
     std::string_view title() const noexcept;
 
     /**
-     * @brief 
-     * @return
+     * @brief Get driver specific information about the window.
+     * @return A SLD_SysWMinfo struct or an empty optional if this operation is not supported.
      */
     std::optional<SDL_SysWMinfo> wm_info() const noexcept;
 
     /**
-     * @brief 
+     * @brief Hide the window.
      */
     void hide() noexcept;
 
     /**
-     * @brief 
+     * @brief Maximize the size of the window.
      */
     void maximize() noexcept;
     
     /**
-     * @brief 
+     * @brief Minimize the size of the window.
      */
     void minimize() noexcept;
 
     /**
-     * @brief 
+     * @brief Raise this window above other windows and set the input focus.
      */
     void raise() noexcept;
 
     /**
-     * @brief 
+     * @brief Restores the size and position of a minimized/maximized window.
      */
     void restore() noexcept;
 
     /**
-     * @brief
-     * @param borderer 
+     * @brief Change the border state of a window.
+     * @param borderer A bool denoting if the window should be bordered.
      */
     void set_bordered(bool const bordered) noexcept;
 
     /**
-     * @brief
-     * @param brightness 
+     * @brief Change the brightness of a window.
+     * @param brightness The new brightness values for the window.
      */
     bool set_brightness(float const brightness) noexcept;
 
     // SDL_SetWindowData
 
     /**
-     * @brief
-     * @param dm
-     * @return 
+     * @brief Sets the display mode to use when the window is at fullscreen.
+     * @param dm The SDL_DisplayMode strut denoting the window's new display mode.
+     * @return True if succeeded, false if failed.
      */
     bool set_display_mode(SDL_DisplayMode const& dm) noexcept;
 
     /**
-     * @brief
-     * @return 
+     * @brief Set the window's display mode to use the current dimensions and the desktop refresh rate.
+     * @return True if succeeded, false if failed.
      */
     bool set_display_mode() noexcept;
 
     /**
-     * @brief
-     * @param flags
-     * @return 
+     * @brief Set the window's fullscreen property.
+     * @param flags The fullscreen enum type.
+     * @return True if succeeded, false if failed. 
      */
     bool set_fullscreen(fullscreen_flags const flags) noexcept;
 
     /**
-     * @brief
-     * @param r
-     * @param g
-     * @param b
-     * @return 
+     * @brief Set the gamma ramp for the display that owns this window.
+     * @param r The translation table for the red channel.
+     * @param g The translation table for the green channel.
+     * @param b The translation table for the blue channel.
+     * @return True if succeeded, false if failed. 
      */
     bool set_gamma_ramp(std::span<std::uint16_t const, 256> const r, 
                         std::span<std::uint16_t const, 256> const g, 
                         std::span<std::uint16_t const, 256> const b) noexcept;
 
     /**
-     * @brief
-     * @param grabbed
+     * @brief Change the grabbed state of the window.
+     * @param grabbed The bool denoting if the window should be grabbed.
      */
-    void set_grabbed(bool const grabbed = true) noexcept;
+    void set_grabbed(bool grabbed = true) noexcept;
 
     /**
-     * @brief
-     * @param fn
-     * @return 
+     * @brief Provides a callback that decides if a window region has special properties.
+     * @param fn A callable triggered when doing a hit-test.
+     * @return True if succeeded, false if failed. 
+     * @note Function must have the signature `SDL_HitTestResult(window&, point<int>)`    
      */
-    bool set_hit_test(function_ref<SDL_HitTestResult(window&, SDL_Point const&)> const fn) noexcept;
+    bool set_hit_test(function_ref<SDL_HitTestResult(window&, point<int>)> const fn) noexcept;
 
     /**
-     * @brief
-     * @param fn
-     * @return 
+     * @brief Provides a callback that decides if a window region has special properties.
+     * @param fn A callable triggered when doing a hit-test.
+     * @return True if succeeded, false if failed. 
+     * @note Function must have the signature `SDL_HitTestResult(window const&, point<int>)`
      */
-    bool set_hit_test(function_ref<SDL_HitTestResult(window const&, SDL_Point const&)> const fn) noexcept;
+    bool set_hit_test(function_ref<SDL_HitTestResult(window const&, point<int>)> const fn) noexcept;
 
     /**
-     * @brief
-     * @param s
+     * @brief Set the icon for a window.
+     * @param s A surface to use as the icon.
     */
     void set_icon(surface const& s) noexcept;
 
     /**
-     * @brief
-     * @return
+     * @brief Explicitly set input focus to this window.
+     * @return True if succeeded, false if failed.
      */
     bool set_input_focus() noexcept;
 
     /**
-     * @brief
-     * @param wh
+     * @brief Set the maximum size of the window.
+     * @param wh The maximum size.
      */
-    void set_maximum_size(wh<int> const wh) noexcept;
+    void set_maximum_size(wh<int> wh) noexcept;
 
     /**
-     * @brief
-     * @param wh
+     * @brief Set the minimum size of the window.
+     * @param wh The minimum size.
      */
     void set_minimum_size(wh<int> const wh) noexcept;
 
     /**
-     * @brief
-     * @param parent
-     * @return
+     * @brief Set this window as a modal for another window.
+     * @param parent The parent window for this window.
+     * @return True if succeeded, false if failed.
      */
     bool set_modal_for(window const& parent) noexcept;
 
     /**
-     * @brief
-     * @param opacity
-     * @return
+     * @brief Set the opacity of the window.
+     * @param opacity The new opacity value.
+     * @return True if succeeded, false if failed.
+     * @note The provided opacity is clamped between (0.f, 1.f)
      */
     bool set_opacity(float const opacity) noexcept;
 
     /**
-     * @brief
-     * @param xy
+     * @brief Set the position of the window.
+     * @param xy The new position.
      */
     void set_position(xy<int> const xy) noexcept;
 
     /**
-     * @brief
-     * @param resizable
+     * @brief Set if the window is resizable.
+     * @param resizable A bool denoting if the window is resizable.
      */
     void set_resizable(bool const resizable) noexcept;
 
     /**
-     * @brief
-     * @param wh
+     * @brief Set the current size of the window.
+     * @param wh The new size.
      */
     void set_size(wh<int> const wh) noexcept;
 
     /**
-     * @brief
-     * @param title
+     * @brief Set the title of the window.
+     * @param title The window's new title.
      */
     void set_title(null_term_string const title) noexcept;
 
     /**
-     * @brief
-     * @param flags
-     * @param title
-     * @param message
-     * @return
+     * @brief Displays a simple modal message box.
+     * @param flags The mesage box enum flags.
+     * @param title Message box's title.
+     * @param message Message box's message.
+     * @return True if succeeded, false if failed.
      */
     bool show_simple_message_box(message_box_flags const flags, null_term_string const title, null_term_string const message) noexcept;
 
     /**
-     * @brief
+     * @brief Shows the window.
      */
     void show() noexcept;
 
     /**
-     * @brief
+     * @brief Copies the dinow surface to the screen.
+     * @return True if succeeded, false if failed.
      */
     bool update_surface() noexcept;
 
     /**
-     * @brief
-     * @param rects
-     * @return 
+     * @brief Copy areas of the window surface to the screen. 
+     * @param rects The areas of the surface to copy.
+     * @return True if succeeded, false if failed. 
      */
-    bool update_surface_rects(std::span<SDL_Rect const> const rects) noexcept;
+    bool update_surface_rects(std::span<rect<int> const> const rects) noexcept;
 };
 
 } // namespace sdl2

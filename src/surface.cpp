@@ -1,4 +1,4 @@
-#include "surface.hpp"
+#include "../include/surface.hpp"
 
 #include <SDL2/SDL_image.h>
 
@@ -85,69 +85,68 @@ bool surface::must_lock() const noexcept { return SDL_MUSTLOCK(surface_); }
 
 // blit
 bool surface::blit(rect<int> const& srcrect, surface& dst, rect<int>& dstrect) noexcept {
-    return SDL_BlitSurface(surface_, &srcrect.get(), dst.native_handle(), &dstrect.get()) == 0;
+    return SDL_BlitSurface(surface_, srcrect.native_handle(), dst.native_handle(), dstrect.native_handle()) == 0;
 }
 bool surface::blit(surface& dst, rect<int>& dstrect) noexcept {
-    return SDL_BlitSurface(surface_, nullptr, dst.native_handle(), &dstrect.get()) == 0;
+    return SDL_BlitSurface(surface_, nullptr, dst.native_handle(), dstrect.native_handle()) == 0;
 }
 bool surface::blit(surface& dst) noexcept {
     return SDL_BlitSurface(surface_, nullptr, dst.native_handle(), nullptr) == 0;
 }
 bool surface::blit(rect<int> const& srcrect, surface& dst) noexcept {
-    return SDL_BlitSurface(surface_, &srcrect.get(), dst.native_handle(), nullptr) == 0;
+    return SDL_BlitSurface(surface_, srcrect.native_handle(), dst.native_handle(), nullptr) == 0;
 }
 
 // blit_scaled
 bool surface::blit_scaled(rect<int> const& srcrect, surface& dst, rect<int>& dstrect) noexcept {
-    return SDL_BlitScaled(surface_, &srcrect.get(), dst.native_handle(), &dstrect.get()) == 0;
+    return SDL_BlitScaled(surface_, srcrect.native_handle(), dst.native_handle(), dstrect.native_handle()) == 0;
 }
 bool surface::blit_scaled(surface& dst, rect<int>& dstrect) noexcept {
-    return SDL_BlitScaled(surface_, nullptr, dst.native_handle(), &dstrect.get()) == 0;
+    return SDL_BlitScaled(surface_, nullptr, dst.native_handle(), dstrect.native_handle()) == 0;
 }
 bool surface::blit_scaled(surface& dst) noexcept {
     return SDL_BlitScaled(surface_, nullptr, dst.native_handle(), nullptr) == 0;
 }
 bool surface::blit_scaled(rect<int> const& srcrect, surface& dst) noexcept {
-    return SDL_BlitScaled(surface_, &srcrect.get(), dst.native_handle(), nullptr) == 0;
+    return SDL_BlitScaled(surface_, srcrect.native_handle(), dst.native_handle(), nullptr) == 0;
 }
 
 // lower_blit
 bool surface::lower_blit(rect<int> const& srcrect, surface& dst, rect<int>& dstrect) noexcept {
-    return SDL_LowerBlit(surface_, const_cast<SDL_Rect*>(&srcrect.get()), dst.native_handle(), &dstrect.get()) == 0;
+    return SDL_LowerBlit(surface_, const_cast<SDL_Rect*>(srcrect.native_handle()), dst.native_handle(), dstrect.native_handle()) == 0;
 }
 bool surface::lower_blit(surface& dst, rect<int>& dstrect) noexcept {
-    return SDL_LowerBlit(surface_, nullptr, dst.native_handle(), &dstrect.get()) == 0;
+    return SDL_LowerBlit(surface_, nullptr, dst.native_handle(), dstrect.native_handle()) == 0;
 }
 bool surface::lower_blit(surface& dst) noexcept {
     return SDL_LowerBlit(surface_, nullptr, dst.native_handle(), nullptr) == 0;
 }
 bool surface::lower_blit(rect<int> const& srcrect, surface& dst) noexcept {
-    return SDL_LowerBlit(surface_, const_cast<SDL_Rect*>(&srcrect.get()), dst.native_handle(), nullptr) == 0;
+    return SDL_LowerBlit(surface_, const_cast<SDL_Rect*>(srcrect.native_handle()), dst.native_handle(), nullptr) == 0;
 }
 
 // lower_blit_scaled
 bool surface::lower_blit_scaled(rect<int> const& srcrect, surface& dst, rect<int>& dstrect) noexcept {
-    return SDL_LowerBlitScaled(surface_, const_cast<SDL_Rect*>(&srcrect.get()), dst.native_handle(), &dstrect.get()) == 0;
+    return SDL_LowerBlitScaled(surface_, const_cast<SDL_Rect*>(srcrect.native_handle()), dst.native_handle(), dstrect.native_handle()) == 0;
 }
 bool surface::lower_blit_scaled(surface& dst, rect<int>& dstrect) noexcept {
-    return SDL_LowerBlitScaled(surface_, nullptr, dst.native_handle(), &dstrect.get()) == 0;
+    return SDL_LowerBlitScaled(surface_, nullptr, dst.native_handle(), dstrect.native_handle()) == 0;
 }
 bool surface::lower_blit_scaled(surface& dst) noexcept {
     return SDL_LowerBlitScaled(surface_, nullptr, dst.native_handle(), nullptr) == 0;
 }
 bool surface::lower_blit_scaled(rect<int> const& srcrect, surface& dst) noexcept {
-    return SDL_LowerBlitScaled(surface_, const_cast<SDL_Rect*>(&srcrect.get()), dst.native_handle(), nullptr) == 0;
+    return SDL_LowerBlitScaled(surface_, const_cast<SDL_Rect*>(srcrect.native_handle()), dst.native_handle(), nullptr) == 0;
 }
 
 bool surface::fill_rect(rect<int> const& rect, pixel_color const color) noexcept {
-    return SDL_FillRect(surface_, &rect.get(), color) == 0;
+    return SDL_FillRect(surface_, rect.native_handle(), color) == 0;
 }
 bool surface::fill(pixel_color const color) noexcept {
     return SDL_FillRect(surface_, nullptr, color) == 0;
 }
 bool surface::fill_rects(std::span<rect<int> const> const rects, pixel_color const color) noexcept {
-    SDL_Rect const* const sdl_rects = std::addressof(rects.data()->get());
-    return SDL_FillRects(surface_, sdl_rects, static_cast<int>(rects.size()), color) == 0;
+    return SDL_FillRects(surface_, rects.data()->native_handle(), static_cast<int>(rects.size()), color) == 0;
 }
 
 bool surface::convert(sdl2::pixel_format const& fmt) noexcept {
@@ -189,7 +188,7 @@ rgb<std::uint8_t> surface::color_mod() const noexcept {
 }
 
 bool surface::set_clip_rect(rect<int> const& rect) noexcept {
-    return SDL_SetClipRect(surface_, &rect.get()) == SDL_TRUE;
+    return SDL_SetClipRect(surface_, rect.native_handle()) == SDL_TRUE;
 }
 
 void surface::disable_clipping() noexcept {

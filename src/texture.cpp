@@ -1,5 +1,5 @@
-#include "texture.hpp"
-#include "renderer.hpp"
+#include "../include/texture.hpp"
+#include "../include/renderer.hpp"
 
 #include <SDL2/SDL_image.h>
 
@@ -49,7 +49,7 @@ texture_lock texture::lock(rect<int> const& rect) noexcept {
     SDL2_ASSERT(access() == texture_access::STREAMING);
     void* pixels{};
     int pitch{};
-    SDL_LockTexture(texture_, &rect.get(), &pixels, &pitch);
+    SDL_LockTexture(texture_, rect.native_handle(), &pixels, &pitch);
     return {texture_, pixels, pitch};
 }
 
@@ -117,7 +117,7 @@ bool texture::set_color_mod(rgb<> const mod) noexcept {
 }
 
 bool texture::update(rect<int> const& rect, std::span<pixel_color const> const pixels, int const pitch) noexcept {
-    return SDL_UpdateTexture(texture_, &rect.get(), pixels.data(), pitch) == 0;
+    return SDL_UpdateTexture(texture_, rect.native_handle(), pixels.data(), pitch) == 0;
 }
 
 bool texture::update(std::span<pixel_color const> const pixels, int const pitch) noexcept {
@@ -129,7 +129,7 @@ bool texture::update_yuv(rect<int> const& rect,
                          std::uint8_t const* uplane, int const upitch,
                          std::uint8_t const* vplane, int const vpitch) noexcept
 {
-    return SDL_UpdateYUVTexture(texture_, &rect.get(), yplane, ypitch, uplane, upitch, vplane, vpitch) == 0;
+    return SDL_UpdateYUVTexture(texture_, rect.native_handle(), yplane, ypitch, uplane, upitch, vplane, vpitch) == 0;
 }
 
 bool texture::update_yuv(std::uint8_t const* yplane, int const ypitch,

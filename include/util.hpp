@@ -154,9 +154,9 @@ public:
 
     /**
      * @brief Construct an empty optional_ref.
-     * @param null A nullopt_t.
+     * @param _ A nullopt_t.
      */
-    constexpr optional_ref(nullopt_t null) noexcept {}
+    constexpr optional_ref(nullopt_t) noexcept {}
 
     /**
      * @brief Construct a non-empty optional_ref.
@@ -309,6 +309,11 @@ public:
      * @return Pointer to the first character.
      */
     constexpr auto data() const noexcept { return str_; }
+};
+
+template<class...>
+struct always_false {
+    static constexpr bool value = std::false_type::value;
 };
 
 } // namespace sdl2

@@ -370,7 +370,7 @@ public:
      * @param color 
      * @return
      */
-    bool fill(pixel_colo color) noexcept;
+    bool fill(pixel_color color) noexcept;
 
     /**
      * @brief
