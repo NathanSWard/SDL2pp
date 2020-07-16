@@ -7,20 +7,20 @@ using namespace sdl2;
 
 std::optional<texture> texture::create(renderer& r, pixel_format_enum const format, texture_access const access, wh<int> const wh) noexcept {
     if (auto const t = SDL_CreateTexture(r.native_handle(), static_cast<std::uint32_t>(format), static_cast<int>(access), wh.width, wh.height); t != nullptr)
-        return texture{t};
+        return texture{*t};
     return {};
 }
 
 std::optional<texture> texture::create(renderer& r, surface const& s) noexcept {
     if (auto const t = SDL_CreateTextureFromSurface(r.native_handle(), s.native_handle()); t != nullptr)
-        return texture{t};
+        return texture{*t};
     return {};
 }
 
-std::optional<texture> texture::create(renderer& r, null_term_string file) noexcept {
+std::optional<texture> texture::create(renderer& r, null_term_string const file) noexcept {
     if (auto const s = surface::create(file); s)
         if (auto const t = SDL_CreateTextureFromSurface(r.native_handle(), s->native_handle()); t != nullptr)
-            return texture{t};
+            return texture{*t};
     return {};
 }
 

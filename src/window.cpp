@@ -53,17 +53,11 @@ window_flags window::flags() const noexcept {
 
 // SDL_GetWindowFromID
 
-bool window::gamma_ramp(std::span<std::uint16_t, 256> const r, 
-                        std::span<std::uint16_t, 256> const g, 
-                        std::span<std::uint16_t, 256> const b) const noexcept {
-    return SDL_GetWindowGammaRamp(window_, r.data(), g.data(), b.data()) == 0;
-}
-
-std::optional<rgb<std::array<std::uint16_t, 256>>> window::gamma_ramp() const noexcept {
+rgb<std::array<std::uint16_t, 256>> window::gamma_ramp() const noexcept {
     rgb<std::array<std::uint16_t, 256>> info{};
-    if (SDL_GetWindowGammaRamp(window_, info.r.data(), info.g.data(), info.b.data()) == 0)
-        return info;
-    return {};
+    [[maybe_unused]] auto const err = SDL_GetWindowGammaRamp(window_, info.r.data(), info.g.data(), info.b.data());
+    SDL2_ASSERT(err >= 0);
+    return info;
 }
 
 bool window::is_grabbed() const noexcept {

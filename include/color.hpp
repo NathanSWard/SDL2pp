@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <concepts>
 #include <cstdint>
+#include <optional>
 #include <span>
 #include "enums.hpp"
 #include "util.hpp"
@@ -163,16 +164,16 @@ class pixel_color {
     friend class surface;
 
 public:
-    constexpr pixel_color(std::uint32_t const col) noexcept : col_(col) {}
+    constexpr explicit pixel_color(std::uint32_t const col) noexcept : col_(col) {}
 
-    constexpr operator std::uint32_t() const noexcept { return col_; }
+    constexpr explicit operator std::uint32_t() const noexcept { return col_; }
     constexpr std::uint32_t value() const noexcept { return col_; }
 
-    explicit pixel_color(pixel_format const& fmt, rgb<std::uint8_t> const _rgb) noexcept 
-        : col_(SDL_MapRGB(fmt.native_handle(), _rgb.r, _rgb.g, _rgb.b)) {}
+    explicit pixel_color(pixel_format const& fmt, rgb<std::uint8_t> const rgb) noexcept 
+        : col_(SDL_MapRGB(fmt.native_handle(), rgb.r, rgb.g, rgb.b)) {}
 
-    explicit pixel_color(pixel_format const& fmt, rgba<std::uint8_t> const _rgba) noexcept 
-        : col_(SDL_MapRGBA(fmt.native_handle(), _rgba.r, _rgba.g, _rgba.b, _rgba.a)) {}
+    explicit pixel_color(pixel_format const& fmt, rgba<std::uint8_t> const rgba) noexcept 
+        : col_(SDL_MapRGBA(fmt.native_handle(), rgba.r, rgba.g, rgba.b, rgba.a)) {}
 
     constexpr pixel_color(pixel_color const&) noexcept = default;
     constexpr pixel_color(pixel_color&&) noexcept = default;

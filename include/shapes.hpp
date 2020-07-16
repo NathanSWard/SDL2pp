@@ -4,6 +4,8 @@
 #include <concepts>
 #include <type_traits>
 
+#include "utility.hpp"
+
 namespace sdl2 {
 
 template<class T>
@@ -38,6 +40,35 @@ public:
     constexpr auto& y() noexcept { return rect_.y; }
     constexpr auto& w() noexcept { return rect_.w; }
     constexpr auto& h() noexcept { return rect_.h; }
+
+    constexpr auto size() const noexcept { return rect_.w * rect_.h; }
+
+    constexpr xy<T> top_left() const noexcept { return {rect_.x, rect_.y}; };
+    constexpr xy<T> top_right() const noexcept { return {rect_.x + rect_.w, rect_.y}; };
+    constexpr xy<T> bottom_left() const noexcept { return {rect_.x, rect_.y + rect_.h}; };
+    constexpr xy<T> bottom_right() const noexcept { return {rect_.x + rect_.w, rect_.y + rect_.h}; };
+    constexpr xy<T> center() const noexcept { 
+        return {rect_.x + rect_.w / T{2}, rect_.y + rect_.h / T{2});
+    }
+
+    template<std::size_t I>
+    constexpr auto& get() noexcept {
+        if constexpr (I == 0) return x();
+        else if constexpr (I == 1) return y();
+        else if constexpr (I == 2) return w();
+        else if constexpr (I == 3) return h();
+        else static_assert(false, "invalid sdl2::rect::get<I>() index");
+    }
+
+    template<std::size_t I>
+    constexpr auto const& get() const noexcept {
+        if constexpr (I == 0) return x();
+        else if constexpr (I == 1) return y();
+        else if constexpr (I == 2) return w();
+        else if constexpr (I == 3) return h();
+        else static_assert(false, "invalid sdl2::rect::get<I>() index");
+    }
+
 };
 
 template<sdl2_shape_rep T>
@@ -64,6 +95,32 @@ public:
     constexpr auto& x() noexcept { return point_.x; }
     constexpr auto const& y() const noexcept { return point_.y; }
     constexpr auto& y() noexcept { return point_.y; }
+
+    template<std::size_t I>
+    constexpr auto& get() noexcept {
+        if constexpr (I == 0) return x();
+        else if constexpr (I == 1) return y();
+        else static_assert(false, "invalid sdl2::point::get<I>() index");
+    }
+
+    template<std::size_t I>
+    constexpr auto const& get() const noexcept {
+        if constexpr (I == 0) return x();
+        else if constexpr (I == 1) return y();
+        else static_assert(false, "invalid sdl2::point::get<I>() index");
+    }
 };
 
-}
+} // namespace sdl2
+
+namespace std {
+    template<class T>
+    struct tuple_size<sdl2::rect<T>> {
+        static constexpr std::size_t value = 4;
+    };
+
+    template<class T>
+    struct tuple_size<sdl2::point<T>> {
+        static constexpr std::size_t value = 2;
+    };
+} // namespace sdl2
