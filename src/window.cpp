@@ -2,20 +2,14 @@
 
 using namespace sdl2;
 
-std::optional<window> window::create(null_term_string const title, xy<int> const xy,
-                                    wh<int> const wh, window_flags const flgs) noexcept 
-{
-    if (auto const win = SDL_CreateWindow(title.data(), xy.x, xy.y, wh.width, wh.height, static_cast<std::uint32_t>(flgs)); win != nullptr)
-        return window{*win};
-    return {};
-}
+window::window(null_term_string const title, xy<int> const xy, wh<int> const wh, window_flags const flgs) noexcept 
+    : window_{SDL_CreateWindow(title.data(), xy.x, xy.y, wh.width, wh.height, static_cast<std::uint32_t>(flgs))}
+{}
 
-std::optional<window> window::copy(window const& other) noexcept {
+window window::copy(window const& other) noexcept {
     auto const [x, y] = other.position();
     auto const [w, h] = other.size();
-    if (auto const win = SDL_CreateWindow(other.title().data(), x, y, w, h, static_cast<std::uint32_t>(other.flags())); win != nullptr)
-        return window{*win};
-    return {};
+    return window{SDL_CreateWindow(other.title().data(), x, y, w, h, static_cast<std::uint32_t>(other.flags()))};
 }
 
 window::~window() noexcept { 

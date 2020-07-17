@@ -27,8 +27,8 @@ public:
      * @brief Explicit constructor for the SDL2 C API.
      * @param window The SDL_Window to take ownership of.
      */
-    constexpr explicit window(SDL_Window& window) noexcept
-        : window_(std::addressof(window)) {}
+    constexpr explicit window(SDL_Window* window) noexcept
+        : window_(window) {}
 
     /**
      * @brief Copy constructor deleted.
@@ -53,6 +53,27 @@ public:
         : window_(std::exchange(other.window_, nullptr)) {}
 
     /**
+     * @brief Construct a window.
+     * @param title The title of the window. 
+     * @param xy The position of the window.
+     * @param wh The width/height of the window.
+     * @param flgs The window flag specifications.
+     */
+    window(null_term_string title, xy<int> xy, wh<int> wh, window_flags flgs) noexcept;
+
+    /**
+     * @brief Checks if the window is in a valid state.
+     * @return True if valid, false if not.
+     */
+    constexpr explicit operator bool() const noexcept { return window_ != nullptr; }
+
+    /**
+     * @brief Checks if the window is in a valid state.
+     * @return True if valid, false if not.
+     */
+    constexpr bool is_ok() const noexcept { return window_ != nullptr; }
+
+    /**
      * @brief An xy position denoting a centered window.
      */
     static constexpr xy<int> pos_centered{SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED};
@@ -63,22 +84,12 @@ public:
     static constexpr xy<int> pos_undefined{SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED};
 
     /**
-     * @brief Construct an SDL window.
-     * @param title The title of the window. 
-     * @param xy The position of the window.
-     * @param wh The width/height of the window.
-     * @param flgs The window flag specifications.
-     * @return An optional window if successfully created.
-     */
-    static std::optional<window> create(null_term_string const title, xy<int> const xy,
-                                        wh<int> const wh, window_flags const flgs) noexcept;
-
-    /**
      * @brief Construct a window from another. 
      * @param other The window object to copy data from.
      * @return An optional window if successfully created.
+     * @note This copy operation has an explicit name to avoid unnecessary copying due to a copy constructor call.
     */
-    static std::optional<window> copy(window const& other) noexcept;
+    static window copy(window const& other) noexcept;
 
     /**
      * @brief The destructor.

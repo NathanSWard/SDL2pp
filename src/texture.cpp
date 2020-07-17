@@ -5,27 +5,21 @@
 
 using namespace sdl2;
 
-std::optional<texture> texture::create(renderer& r, pixel_format_enum const format, texture_access const access, wh<int> const wh) noexcept {
-    if (auto const t = SDL_CreateTexture(r.native_handle(), static_cast<std::uint32_t>(format), static_cast<int>(access), wh.width, wh.height); t != nullptr)
-        return texture{*t};
-    return {};
-}
+texture::texture(renderer& r, pixel_format_enum const format, texture_access const access, wh<int> const wh) noexcept 
+    : texture_{SDL_CreateTexture(r.native_handle(), static_cast<std::uint32_t>(format), static_cast<int>(access), wh.width, wh.height)} 
+{}
 
-std::optional<texture> texture::create(renderer& r, surface const& s) noexcept {
-    if (auto const t = SDL_CreateTextureFromSurface(r.native_handle(), s.native_handle()); t != nullptr)
-        return texture{*t};
-    return {};
-}
+texture::texture(renderer& r, surface const& s) noexcept 
+    : texture_{SDL_CreateTextureFromSurface(r.native_handle(), s.native_handle())}
+{}
 
-std::optional<texture> texture::create(renderer& r, null_term_string const file) noexcept {
-    if (auto const s = surface::create(file); s)
-        if (auto const t = SDL_CreateTextureFromSurface(r.native_handle(), s->native_handle()); t != nullptr)
-            return texture{*t};
-    return {};
-}
-
-constexpr texture::texture(texture&& other) noexcept 
-    : texture_(std::exchange(other.texture_, nullptr)) {}
+texture::texture(renderer& r, null_term_string const file) noexcept 
+    : texture_{[&r, &file]() -> SDL_Texture* {
+        if (surface s{file}; s)
+            return SDL_CreateTextureFromSurface(r.native_handle(), s.native_handle());
+        return nullptr;
+    }()}
+{}
 
 texture::~texture() noexcept { 
     if (texture_) 
@@ -39,17 +33,17 @@ void texture::destroy() noexcept {
 
 texture_lock texture::lock() noexcept {
     SDL2_ASSERT(access() == texture_access::STREAMING);
-    void* pixels{};
+    std::byte* pixels{};
     int pitch{};
-    SDL_LockTexture(texture_, nullptr, &pixels, &pitch);
+    SDL_LockTexture(texture_, nullptr, reinterpret_cast<void**>(&pixels), &pitch);
     return {texture_, pixels, pitch};
 }
 
 texture_lock texture::lock(rect<int> const& rect) noexcept {
     SDL2_ASSERT(access() == texture_access::STREAMING);
-    void* pixels{};
+    std::byte* pixels{};
     int pitch{};
-    SDL_LockTexture(texture_, rect.native_handle(), &pixels, &pitch);
+    SDL_LockTexture(texture_, rect.native_handle(), reinterpret_cast<void**>(&pixels), &pitch);
     return {texture_, pixels, pitch};
 }
 
@@ -67,7 +61,7 @@ sdl2::blend_mode texture::blend_mode() const noexcept {
     return static_cast<sdl2::blend_mode>(bm);
 }
 
-rgb<std::uint8_t> texture::color_mode() const noexcept {
+rgb<std::uint8_t> texture::color_mod() const noexcept {
     rgb<std::uint8_t> values;
     [[maybe_unused]] auto const err = SDL_GetTextureColorMod(texture_, &values.r, &values.g, &values.b);
     SDL2_ASSERT(err == 0);
@@ -104,7 +98,7 @@ texture_access texture::access() const noexcept {
     return static_cast<texture_access>(access);
 }
 
-bool texture::set_alpha_mode(std::uint8_t const alpha) noexcept {
+bool texture::set_alpha_mod(std::uint8_t const alpha) noexcept {
     return SDL_SetTextureAlphaMod(texture_, alpha) == 0;
 }
 
@@ -112,29 +106,33 @@ bool texture::set_blend_mode(sdl2::blend_mode const mode) noexcept {
     return SDL_SetTextureBlendMode(texture_, static_cast<SDL_BlendMode>(mode)) == 0;
 }
 
-bool texture::set_color_mod(rgb<> const mod) noexcept {
+bool texture::set_color_mod(rgb<> const& mod) noexcept {
     return SDL_SetTextureColorMod(texture_, mod.r, mod.g, mod.b);
 }
 
-bool texture::update(rect<int> const& rect, std::span<pixel_color const> const pixels, int const pitch) noexcept {
+bool texture::update(rect<int> const& rect, std::span<std::byte const> const pixels, int const pitch) noexcept {
     return SDL_UpdateTexture(texture_, rect.native_handle(), pixels.data(), pitch) == 0;
 }
 
-bool texture::update(std::span<pixel_color const> const pixels, int const pitch) noexcept {
+bool texture::update(std::span<std::byte const> const pixels, int const pitch) noexcept {
     return SDL_UpdateTexture(texture_, nullptr, pixels.data(), pitch) == 0;
 }
 
 bool texture::update_yuv(rect<int> const& rect, 
-                         std::uint8_t const* yplane, int const ypitch,
-                         std::uint8_t const* uplane, int const upitch,
-                         std::uint8_t const* vplane, int const vpitch) noexcept
+                         std::span<std::byte const> yplane, int const ypitch,
+                         std::span<std::byte const> uplane, int const upitch,
+                         std::span<std::byte const> vplane, int const vpitch) noexcept
 {
-    return SDL_UpdateYUVTexture(texture_, rect.native_handle(), yplane, ypitch, uplane, upitch, vplane, vpitch) == 0;
+    return SDL_UpdateYUVTexture(texture_, rect.native_handle(), reinterpret_cast<std::uint8_t const*>(yplane.data()), ypitch, 
+                                                                reinterpret_cast<std::uint8_t const*>(uplane.data()), upitch, 
+                                                                reinterpret_cast<std::uint8_t const*>(vplane.data()), vpitch) == 0;
 }
 
-bool texture::update_yuv(std::uint8_t const* yplane, int const ypitch,
-                         std::uint8_t const* uplane, int const upitch,
-                         std::uint8_t const* vplane, int const vpitch) noexcept
+bool texture::update_yuv(std::span<std::byte const> yplane, int const ypitch,
+                         std::span<std::byte const> uplane, int const upitch,
+                         std::span<std::byte const> vplane, int const vpitch) noexcept
 {
-    return SDL_UpdateYUVTexture(texture_, nullptr, yplane, ypitch, uplane, upitch, vplane, vpitch) == 0;
+    return SDL_UpdateYUVTexture(texture_, nullptr, reinterpret_cast<std::uint8_t const*>(yplane.data()), ypitch, 
+                                                   reinterpret_cast<std::uint8_t const*>(uplane.data()), upitch, 
+                                                   reinterpret_cast<std::uint8_t const*>(vplane.data()), vpitch) == 0;
 }

@@ -10,7 +10,7 @@
 
 namespace sdl2 {
 
-namespace color {
+namespace colors {
     inline constexpr auto red = rgba<>{255, 0, 0, 255};
     inline constexpr auto orange = rgba<>{255, 165, 0, 255};
     inline constexpr auto yellow = rgba<>{255, 255, 0, 255};
@@ -64,7 +64,8 @@ public:
         return {};
     }
 
-    constexpr pixel_format(SDL_PixelFormat& fmt) noexcept : fmt_(std::addressof(fmt)) {}
+    constexpr pixel_format(SDL_PixelFormat& fmt) noexcept 
+        : fmt_(std::addressof(fmt)) {}
 
     ~pixel_format() noexcept {
         if (fmt_)
@@ -159,26 +160,26 @@ using const_pixel_format_view = basic_pixel_format_view<true>;
 
 class surface;
 
-class pixel_color {
+class pixel_value {
     std::uint32_t col_;
     friend class surface;
 
 public:
-    constexpr explicit pixel_color(std::uint32_t const col) noexcept : col_(col) {}
+    constexpr explicit pixel_value(std::uint32_t const col) noexcept : col_(col) {}
 
     constexpr operator std::uint32_t() const noexcept { return col_; }
     constexpr std::uint32_t value() const noexcept { return col_; }
 
-    explicit pixel_color(pixel_format const& fmt, rgb<std::uint8_t> const rgb) noexcept 
+    explicit pixel_value(pixel_format const& fmt, rgb<std::uint8_t> const rgb) noexcept 
         : col_(SDL_MapRGB(fmt.native_handle(), rgb.r, rgb.g, rgb.b)) {}
 
-    explicit pixel_color(pixel_format const& fmt, rgba<std::uint8_t> const rgba) noexcept 
+    explicit pixel_value(pixel_format const& fmt, rgba<std::uint8_t> const rgba) noexcept 
         : col_(SDL_MapRGBA(fmt.native_handle(), rgba.r, rgba.g, rgba.b, rgba.a)) {}
 
-    constexpr pixel_color(pixel_color const&) noexcept = default;
-    constexpr pixel_color(pixel_color&&) noexcept = default;
-    constexpr pixel_color& operator=(pixel_color const&) noexcept = default;
-    constexpr pixel_color& operator=(pixel_color&&) noexcept = default;
+    constexpr pixel_value(pixel_value const&) noexcept = default;
+    constexpr pixel_value(pixel_value&&) noexcept = default;
+    constexpr pixel_value& operator=(pixel_value const&) noexcept = default;
+    constexpr pixel_value& operator=(pixel_value&&) noexcept = default;
 
     rgb<std::uint8_t> as_rgb(pixel_format const& fmt) const noexcept {
         rgb<std::uint8_t> _rgb{};

@@ -6,17 +6,13 @@ std::span<pixel_format_enum const> renderer_info::texture_formats() const noexce
     return std::span{reinterpret_cast<pixel_format_enum const*>(info_.texture_formats), info_.num_texture_formats}; 
 }
 
-std::optional<renderer> renderer::create(window& win, renderer_flags const flags, int const device_index) noexcept {
-    if (auto const r = SDL_CreateRenderer(win.native_handle(), device_index, static_cast<std::uint32_t>(flags)); r != nullptr)
-        return renderer{*r};
-    return {};
-}
+renderer::renderer(window& win, renderer_flags const flags, int const device_index) noexcept\
+    : renderer_{SDL_CreateRenderer(win.native_handle(), device_index, static_cast<std::uint32_t>(flags))}
+{}
 
-std::optional<renderer> renderer::create_software(surface& s) noexcept {
-    if (auto const r = SDL_CreateSoftwareRenderer(s.native_handle()); r != nullptr)
-        return renderer{*r};
-    return {};
-}
+renderer::renderer(surface& s) noexcept
+    : renderer_{SDL_CreateSoftwareRenderer(s.native_handle())}
+{}
 
 renderer::~renderer() noexcept {
     if (renderer_)
@@ -210,12 +206,9 @@ bool renderer::reset_render_target() noexcept {
     return SDL_SetRenderTarget(renderer_, nullptr) == 0;
 }
 
-inline std::optional<std::pair<window, renderer>> create_window_and_renderer(wh<int> const _wh, window_flags const flags) noexcept {
+inline std::pair<window, renderer> create_window_and_renderer(wh<int> const _wh, window_flags const flags) noexcept {
     SDL_Window* w{nullptr};
     SDL_Renderer* r{nullptr};
-    if (SDL_CreateWindowAndRenderer(_wh.width, _wh.height, static_cast<std::uint32_t>(flags), &w, &r) == 0)
-        return std::pair<window, renderer>(std::piecewise_construct, std::forward_as_tuple(*w), std::forward_as_tuple(*r));
-    if (w) SDL_DestroyWindow(w);
-    if (r) SDL_DestroyRenderer(r);
-    return {};
+    SDL_CreateWindowAndRenderer(_wh.width, _wh.height, static_cast<std::uint32_t>(flags), &w, &r);
+    return std::pair<window, renderer>(std::piecewise_construct, std::forward_as_tuple(w), std::forward_as_tuple(r));
 }

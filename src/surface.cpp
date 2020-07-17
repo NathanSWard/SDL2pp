@@ -4,36 +4,26 @@
 
 using namespace sdl2;
 
-std::optional<surface> surface::create(wh<int> const _wh, int const depth, rgba<std::uint32_t> const masks) noexcept {
-    if (auto const s = SDL_CreateRGBSurface(0, _wh.width, _wh.height, depth, masks.r, masks.g, masks.b, masks.a); s != nullptr)
-        return surface{*s};
-    return{};
-}
+surface::surface(wh<int> const _wh, int const depth, rgba<std::uint32_t> const masks) noexcept 
+    : surface_{SDL_CreateRGBSurface(0, _wh.width, _wh.height, depth, masks.r, masks.g, masks.b, masks.a)}
+{}
 
-std::optional<surface> surface::create(void* const pixels, int const pitch, wh<int> const _wh, 
-                                                int const depth, rgba<std::uint32_t> const masks) noexcept {
-    if (auto const s = SDL_CreateRGBSurfaceFrom(pixels, _wh.width, _wh.height, depth, pitch, masks.r, masks.g, masks.b, masks.a); s != nullptr)
-        return surface{*s};
-    return {};
-}
+surface::surface(void* const pixels, int const pitch, wh<int> const _wh, 
+                                                int const depth, rgba<std::uint32_t> const masks) noexcept 
+    : surface_{SDL_CreateRGBSurfaceFrom(pixels, _wh.width, _wh.height, depth, pitch, masks.r, masks.g, masks.b, masks.a)}
+{}
 
-std::optional<surface> surface::create(pixel_format_enum const fmt, int const depth, wh<int> const _wh) noexcept {
-    if (auto const s = SDL_CreateRGBSurfaceWithFormat(0, _wh.width, _wh.height, depth, static_cast<std::uint32_t>(fmt)); s != nullptr)
-        return surface{*s};
-    return {};
-}
+surface::surface(pixel_format_enum const fmt, int const depth, wh<int> const _wh) noexcept 
+    : surface_{SDL_CreateRGBSurfaceWithFormat(0, _wh.width, _wh.height, depth, static_cast<std::uint32_t>(fmt))}
+{}
 
-std::optional<surface> surface::create(void* const pixels, int const pitch, pixel_format_enum const fmt, int const depth, wh<int> const _wh) noexcept {
-    if (auto const s = SDL_CreateRGBSurfaceWithFormatFrom(pixels, _wh.width, _wh.height, depth, pitch, static_cast<std::uint32_t>(fmt)); s != nullptr)
-        return surface{*s};
-    return {};
-}
+surface::surface(void* const pixels, int const pitch, pixel_format_enum const fmt, int const depth, wh<int> const _wh) noexcept
+    : surface_{SDL_CreateRGBSurfaceWithFormatFrom(pixels, _wh.width, _wh.height, depth, pitch, static_cast<std::uint32_t>(fmt))}
+{}
 
-std::optional<surface> surface::create(null_term_string const file) noexcept {
-    if (auto const s = IMG_Load(file.data()); s != nullptr)
-        return surface{*s};
-    return {};
-}
+surface::surface(null_term_string const file) noexcept 
+    :surface_{IMG_Load(file.data())}
+{}
 
 constexpr surface::surface(surface&& other) noexcept 
     : surface_(std::exchange(other.surface_, nullptr))
@@ -139,13 +129,13 @@ bool surface::lower_blit_scaled(rect<int> const& srcrect, surface& dst) noexcept
     return SDL_LowerBlitScaled(surface_, const_cast<SDL_Rect*>(srcrect.native_handle()), dst.native_handle(), nullptr) == 0;
 }
 
-bool surface::fill_rect(rect<int> const& rect, pixel_color const color) noexcept {
+bool surface::fill_rect(rect<int> const& rect, pixel_value const color) noexcept {
     return SDL_FillRect(surface_, rect.native_handle(), color) == 0;
 }
-bool surface::fill(pixel_color const color) noexcept {
+bool surface::fill(pixel_value const color) noexcept {
     return SDL_FillRect(surface_, nullptr, color) == 0;
 }
-bool surface::fill_rects(std::span<rect<int> const> const rects, pixel_color const color) noexcept {
+bool surface::fill_rects(std::span<rect<int> const> const rects, pixel_value const color) noexcept {
     return SDL_FillRects(surface_, rects.data()->native_handle(), static_cast<int>(rects.size()), color) == 0;
 }
 
@@ -153,16 +143,14 @@ bool surface::convert(sdl2::pixel_format const& fmt) noexcept {
     return SDL_ConvertSurface(surface_, fmt.native_handle(), 0) != nullptr ? true : false;
 }
 
-std::optional<surface> surface::convert_to_new(sdl2::pixel_format const& fmt) const noexcept {
-    if (auto const s = SDL_ConvertSurfaceFormat(surface_, static_cast<std::uint32_t>(fmt.format()), 0); s != nullptr)
-        return surface{*s};
-    return {};
+surface surface::convert_to_new(sdl2::pixel_format const& fmt) const noexcept {
+    return surface{SDL_ConvertSurfaceFormat(surface_, static_cast<std::uint32_t>(fmt.format()), 0)};
 }
 
-std::optional<pixel_color> surface::color_key() const noexcept {
+std::optional<pixel_value> surface::color_key() const noexcept {
     std::uint32_t key{};
     if (SDL_GetColorKey(surface_, &key) == 0)
-        return pixel_color{key};
+        return pixel_value{key};
     return {};
 }
 
@@ -195,7 +183,7 @@ bool surface::disable_clipping() noexcept {
     return SDL_SetClipRect(surface_, nullptr) == SDL_TRUE;
 }
 
-bool surface::set_color_key(bool const enable, pixel_color const color) noexcept {
+bool surface::set_color_key(bool const enable, pixel_value const color) noexcept {
     return SDL_SetColorKey(surface_, static_cast<int>(enable), color);
 }
 

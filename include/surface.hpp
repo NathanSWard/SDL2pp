@@ -23,9 +23,8 @@ public:
      * @param wh
      * @param depth 
      * @param masks
-     * @return
      */
-    static std::optional<surface> create(wh<int> wh, int depth, rgba<std::uint32_t> masks) noexcept;
+    surface(wh<int> wh, int depth, rgba<std::uint32_t> masks) noexcept;
 
     /**
      * @brief
@@ -34,18 +33,16 @@ public:
      * @param wh
      * @param depth 
      * @param masks
-     * @return
      */
-    static std::optional<surface> create(void* pixels, int pitch, wh<int> wh, int depth, rgba<std::uint32_t> masks) noexcept;
+    surface(void* pixels, int pitch, wh<int> wh, int depth, rgba<std::uint32_t> masks) noexcept;
 
     /**
      * @brief
      * @param fmt
      * @param depth
      * @param wh
-     * @return
      */
-    static std::optional<surface> create(pixel_format_enum fmt, int depth, wh<int> wh) noexcept;
+    surface(pixel_format_enum fmt, int depth, wh<int> wh) noexcept;
 
     /**
      * @brief
@@ -54,23 +51,21 @@ public:
      * @param fmt
      * @param depth
      * @param wh
-     * @return
      */
-    static std::optional<surface> create(void* pixels, int pitch, pixel_format_enum fmt, int depth, wh<int> wh) noexcept;
+    surface(void* pixels, int pitch, pixel_format_enum fmt, int depth, wh<int> wh) noexcept;
 
     /**
      * @brief
      * @param file
-     * @return
      */
-    static std::optional<surface> create(null_term_string file) noexcept;
+    surface(null_term_string file) noexcept;
 
     /**
      * @brief 
      * @param s 
      */
-    constexpr explicit surface(SDL_Surface& s) noexcept 
-        : surface_(std::addressof(s)) {}
+    constexpr explicit surface(SDL_Surface* s) noexcept 
+        : surface_(s) {}
 
     /**
      * @brief Copy constructor deleted. 
@@ -92,6 +87,18 @@ public:
      * @param other The surface object to move into this surface.
     */
     constexpr surface(surface&& other) noexcept;
+
+    /**
+     * @brief Checks if the surface is in a valid state.
+     * @return True if valid, false if not.
+     */
+    constexpr explicit operator bool() const noexcept { return surface_ != nullptr; }
+
+    /**
+     * @brief Checks if the surface is in a valid state.
+     * @return True if valid, false if not.
+     */
+    constexpr bool is_ok() const noexcept { return surface_ != nullptr; }
 
     /**
      * @brief The destructor. 
@@ -363,14 +370,14 @@ public:
      * @param color 
      * @return True if succeeded, false if failed.
      */
-    bool fill_rect(rect<int> const& rect, pixel_color color) noexcept;
+    bool fill_rect(rect<int> const& rect, pixel_value color) noexcept;
 
     /**
      * @brief
      * @param color 
      * @return True if succeeded, false if failed.
      */
-    bool fill(pixel_color color) noexcept;
+    bool fill(pixel_value color) noexcept;
 
     /**
      * @brief
@@ -378,7 +385,7 @@ public:
      * @param color 
      * @return True if succeeded, false if failed.
      */
-    bool fill_rects(std::span<rect<int> const> rects, pixel_color color) noexcept;
+    bool fill_rects(std::span<rect<int> const> rects, pixel_value color) noexcept;
 
     /**
      * @brief
@@ -392,13 +399,13 @@ public:
      * @param fmt
      * @return
      */
-    std::optional<surface> convert_to_new(sdl2::pixel_format const& fmt) const noexcept;
+    surface convert_to_new(sdl2::pixel_format const& fmt) const noexcept;
 
     /**
      * @brief
      * @return 
      */
-    std::optional<pixel_color> color_key() const noexcept;
+    std::optional<pixel_value> color_key() const noexcept;
 
     /**
      * @brief
@@ -435,7 +442,7 @@ public:
      * @param color
      * @return True if succeeded, false if failed. 
      */
-    bool set_color_key(bool enable, pixel_color color) noexcept;
+    bool set_color_key(bool enable, pixel_value color) noexcept;
 
     /**
      * @brief

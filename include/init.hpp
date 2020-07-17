@@ -27,18 +27,27 @@ public:
     /**
      * @brief Initialize the internal SDL libraries.
      * @param flgs Initialization flags.
-     * @return An optional SDL2 context struct if initialization succeded.
     */
-    static std::optional<SDL2> init(sdl2_init_flags const& flgs) noexcept {
-        if (SDL_Init(static_cast<std::uint32_t>(flgs)) == 0)
-            return SDL2{};
-        return {};
-    }
+    SDL2(sdl2_init_flags const& flgs) noexcept
+        : valid_{SDL_Init(static_cast<std::uint32_t>(flgs)) == 0}
+    {}
 
     /**
      * @brief Destructor that deinitializes SDL libraries.
     */
     ~SDL2() noexcept { if (valid_) SDL_Quit(); }
+
+    /**
+     * @brief Checks if the SDL libraries were initialized correctly.
+     * @return True if successful, false if not.
+     */
+    constexpr explicit operator bool() const noexcept { return valid_; }
+
+    /**
+     * @brief Checks if the SDL libraries were initialized correctly.
+     * @return True if successful, false if not.
+     */
+    constexpr bool is_ok() const noexcept { return valid_; }
 
     /**
      * @brief Get the previously set error fro, within SDL.
@@ -67,18 +76,27 @@ public:
     /**
      * @brief Initialize the internal SDL_Image libraries.
      * @param flgs Initialization flags.
-     * @return An optional IMG context struct if initialization succeded.
     */
-    static std::optional<IMG> init(img_init_flags const& flgs) noexcept {
-        if (IMG_Init(static_cast<int>(flgs)) == 0)
-            return IMG{};
-        return {};
-    }
+    IMG(img_init_flags const& flgs) noexcept 
+        : valid_{IMG_Init(static_cast<int>(flgs)) == 0}
+    {}
 
     /**
      * @brief Destructor that deinitializes SDL_image libraries.
     */
     ~IMG() noexcept { if (valid_) IMG_Quit(); }
+
+    /**
+     * @brief Checks if the SDL_image libraries were initialized correctly.
+     * @return True if successful, false if not.
+     */
+    constexpr explicit operator bool() const noexcept { return valid_; }
+
+    /**
+     * @brief Checks if the SDL_image libraries were initialized correctly.
+     * @return True if successful, false if not.
+     */
+    constexpr bool is_ok() const noexcept { return valid_; }
 
     /**
      * @brief Get the previously set error from within SDL_Image.

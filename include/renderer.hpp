@@ -76,27 +76,25 @@ public:
     constexpr SDL_Renderer* native_handle() const noexcept { return renderer_; }
 
     /**
-     * @brief Create a 2D rendering context for a window.
+     * @brief Creates a 2D rendering context for a window.
      * @param win The window where the rendering is displayed.
      * @param flags The renderer flags options.
      * @param device_index Index of driver to initialize, or -1 to initialze first avilable device.
-     * @return A renderer object if succeeded or an empty optional if failed.
      */
-    static std::optional<renderer> create(window& win, renderer_flags flags, int device_index = -1) noexcept;
+    renderer(window& win, renderer_flags flags, int device_index = -1) noexcept;
     
     /**
-     * @brief Create a 2D software rendering context for a surface.
+     * @brief Creates a 2D software rendering context for a surface.
      * @param s The surface where the rendering is done.
-     * @return A renderer object if succeeded or an empty optional if failed.
      */
-    static std::optional<renderer> create_software(surface& s) noexcept;
+    renderer(surface& s) noexcept;
 
     /**
      * @brief Explicit constructor for the SDL2 C API.
      * @param r The SDL_Renderer to take ownership of.
      */
-    constexpr explicit renderer(SDL_Renderer& r) noexcept 
-        : renderer_(std::addressof(r)) {}
+    constexpr explicit renderer(SDL_Renderer* r) noexcept 
+        : renderer_{r} {}
 
     /**
      * @brief Copy constructor deleted.
@@ -118,6 +116,18 @@ public:
      */
     constexpr renderer(renderer&& other) noexcept
         : renderer_(std::exchange(other.renderer_, nullptr)) {}
+
+    /**
+     * @brief Checks if the renderer is in a valid state.
+     * @return True if valid, false if not.
+     */
+    constexpr explicit operator bool() const noexcept { return renderer_ != nullptr; }
+
+    /**
+     * @brief Checks if the renderer is in a valid state.
+     * @return True if valid, false if not.
+     */
+    constexpr bool is_ok() const noexcept { return renderer_ != nullptr; }
     
     /**
      * @brief Destructor. 
@@ -539,7 +549,7 @@ public:
  * @param flags the flags used to create the window.
  * @return An optinal pair of sdl2::window and sdl2::renderer, or any empty optional if the function failed. 
  */
-inline std::optional<std::pair<window, renderer>> create_window_and_renderer(wh<int> wh, window_flags flags) noexcept;
+inline std::pair<window, renderer> create_window_and_renderer(wh<int> wh, window_flags flags) noexcept;
 
 // sdl2::renderer template method implementations
 template<class Rep>
