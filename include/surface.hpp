@@ -19,6 +19,34 @@ class surface {
 
 public:
     /**
+     * @brief 
+     * @param s 
+     */
+    constexpr explicit surface(SDL_Surface* s) noexcept 
+        : surface_(s) {}
+
+    /**
+     * @brief Copy constructor deleted. 
+     */
+    surface(surface const&) = delete;
+
+    /**
+     * @brief Copy assignment deleted. 
+     */
+    surface& operator=(surface const&) = delete;
+
+    /**
+     * @brief Move assignment deleted. 
+     */
+    surface& operator=(surface&&) = delete;
+
+    /**
+     * @brief Move constructor.
+     * @param other The surface object to move into this surface.
+    */
+    constexpr surface(surface&& other) noexcept;
+
+    /**
      * @brief
      * @param wh
      * @param depth 
@@ -58,35 +86,18 @@ public:
      * @brief
      * @param file
      */
-    surface(null_term_string file) noexcept;
-
+    explicit surface(null_term_string file) noexcept;
+   
     /**
-     * @brief 
-     * @param s 
+     * @brief The destructor. 
      */
-    constexpr explicit surface(SDL_Surface* s) noexcept 
-        : surface_(s) {}
+    ~surface() noexcept;
 
     /**
-     * @brief Copy constructor deleted. 
+     * @brief Get a pointer to the underlying SDL representation.
+     * @return A pointer to the underlying SDL_Surface.
      */
-    surface(surface const&) = delete;
-
-    /**
-     * @brief Copy assignment deleted. 
-     */
-    surface& operator=(surface const&) = delete;
-
-    /**
-     * @brief Move assignment deleted. 
-     */
-    surface& operator=(surface&&) = delete;
-
-    /**
-     * @brief Move constructor.
-     * @param other The surface object to move into this surface.
-    */
-    constexpr surface(surface&& other) noexcept;
+    constexpr auto native_handle() const noexcept { return surface_; }
 
     /**
      * @brief Checks if the surface is in a valid state.
@@ -99,17 +110,6 @@ public:
      * @return True if valid, false if not.
      */
     constexpr bool is_ok() const noexcept { return surface_ != nullptr; }
-
-    /**
-     * @brief The destructor. 
-     */
-    ~surface() noexcept;
-
-    /**
-     * @brief Get a pointer to the underlying SDL representation.
-     * @return A pointer to the underlying SDL_Surface.
-     */
-    constexpr auto native_handle() const noexcept { return surface_; }
 
     /**
      * @brief

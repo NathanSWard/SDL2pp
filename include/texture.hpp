@@ -66,19 +66,26 @@ class texture {
     
 public:
     /**
+     * @brief Constructor for interfacing with SDL's C API.
+     * @param t An SDL_Texture struct to take ownership of.
+     */
+    constexpr explicit texture(SDL_Texture* t) noexcept 
+        : texture_(t) {}
+
+    /**
      * @brief Creates a texture for a renderer.
      * @param r The rendering context.
      * @param format The pixel format.
      * @param access The texture access.
      * @param wh The size of the texture in pixels.
-    */
+     */
     texture(renderer& r, pixel_format_enum const format, texture_access const access, wh<int> const wh) noexcept;
 
     /**
      * @brief Creates a texture from an existing surface.
      * @param r The rendering context.
      * @param s The surface containing pixel data used to fill the texture.
-    */
+     */
     texture(renderer& r, surface const& s) noexcept;
 
     /**
@@ -87,42 +94,47 @@ public:
      * @param file The path to the file to load the texture from.
      * @note The IMG library must have been initialized for this to work
      * @note This creates a temporary surface to use to create the texture.
-    */
+     */
     texture(renderer& r, null_term_string file) noexcept;
 
     /**
-     * @brief Constructor for interfacing with SDL's C API.
-     * @param t An SDL_Texture struct to take ownership of.
-    */
-    constexpr explicit texture(SDL_Texture* t) noexcept 
-        : texture_(t) {}
-
-    /**
      * @brief Copy constructor deleted.
-    */
+     */
     texture(texture const&) = delete;
 
     /**
      * @brief Copy assignment deleted.
-    */
+     */
     texture& operator=(texture const&) = delete;
 
     /**
      * @brief Move assignment deleted.
-    */
+     */
     texture& operator=(texture&&) = delete;
 
     /**
      * @brief Move constructor.
      * @param other The texture object to move into this texture.
-    */
+     */
     constexpr texture(texture&& other) noexcept 
         : texture_(std::exchange(other.texture_, nullptr)) {}
 
     /**
      * @brief The destructor.
-    */
+     */
     ~texture() noexcept;
+
+    /**
+     * @brief Destroy the underlying texture object.
+     * @note Accessing the texture after this functional call is UB.
+     */
+    void destroy() noexcept;
+
+    /**
+     * @brief Get a pointer to the underlying SDL representation.
+     * @return A pointer to the underlying SDL_Texture.
+     */
+    constexpr SDL_Texture* native_handle() const noexcept { return texture_; }
 
     /**
      * @brief Checks if the texture is in a valid state.
@@ -135,18 +147,6 @@ public:
      * @return True if valid, false if not.
      */
     constexpr bool is_ok() const noexcept { return texture_ != nullptr; }
-
-    /**
-     * @brief Get a pointer to the underlying SDL representation.
-     * @return A pointer to the underlying SDL_Texture.
-     */
-    constexpr SDL_Texture* native_handle() const noexcept { return texture_; }
-
-    /**
-     * @brief Destroy the underlying texture object.
-     * @note Accessing the texture after this functional call is UB.
-     */
-    void destroy() noexcept;
     
     /**
      * @brief Locks the entire texture for write-only pixel access.

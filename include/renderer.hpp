@@ -70,26 +70,6 @@ class renderer {
 
 public: 
     /**
-     * @brief Get a pointer to the underlying SDL representation.
-     * @return A pointer to the underlying SDL_Renderer.
-     */
-    constexpr SDL_Renderer* native_handle() const noexcept { return renderer_; }
-
-    /**
-     * @brief Creates a 2D rendering context for a window.
-     * @param win The window where the rendering is displayed.
-     * @param flags The renderer flags options.
-     * @param device_index Index of driver to initialize, or -1 to initialze first avilable device.
-     */
-    renderer(window& win, renderer_flags flags, int device_index = -1) noexcept;
-    
-    /**
-     * @brief Creates a 2D software rendering context for a surface.
-     * @param s The surface where the rendering is done.
-     */
-    renderer(surface& s) noexcept;
-
-    /**
      * @brief Explicit constructor for the SDL2 C API.
      * @param r The SDL_Renderer to take ownership of.
      */
@@ -118,17 +98,19 @@ public:
         : renderer_(std::exchange(other.renderer_, nullptr)) {}
 
     /**
-     * @brief Checks if the renderer is in a valid state.
-     * @return True if valid, false if not.
+     * @brief Creates a 2D rendering context for a window.
+     * @param win The window where the rendering is displayed.
+     * @param flags The renderer flags options.
+     * @param device_index Index of driver to initialize, or -1 to initialze first avilable device.
      */
-    constexpr explicit operator bool() const noexcept { return renderer_ != nullptr; }
-
-    /**
-     * @brief Checks if the renderer is in a valid state.
-     * @return True if valid, false if not.
-     */
-    constexpr bool is_ok() const noexcept { return renderer_ != nullptr; }
+    renderer(window& win, renderer_flags flags, int device_index = -1) noexcept;
     
+    /**
+     * @brief Creates a 2D software rendering context for a surface.
+     * @param s The surface where the rendering is done.
+     */
+    explicit renderer(surface& s) noexcept;
+
     /**
      * @brief Destructor. 
      */
@@ -139,6 +121,24 @@ public:
      * @note Accessing the renderer after this functional call is UB.
      */
     void destroy() noexcept;
+
+    /**
+     * @brief Get a pointer to the underlying SDL representation.
+     * @return A pointer to the underlying SDL_Renderer.
+     */
+    constexpr SDL_Renderer* native_handle() const noexcept { return renderer_; }
+
+    /**
+     * @brief Checks if the renderer is in a valid state.
+     * @return True if valid, false if not.
+     */
+    constexpr explicit operator bool() const noexcept { return renderer_ != nullptr; }
+
+    /**
+     * @brief Checks if the renderer is in a valid state.
+     * @return True if valid, false if not.
+     */
+    constexpr bool is_ok() const noexcept { return renderer_ != nullptr; }
 
     /**
      * @brief Get the blend mode used for drawing ops.

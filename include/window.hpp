@@ -62,6 +62,23 @@ public:
     window(null_term_string title, xy<int> xy, wh<int> wh, window_flags flgs) noexcept;
 
     /**
+     * @brief The destructor.
+     */
+    ~window() noexcept;
+
+    /**
+     * @brief Destroy the underlying window object.
+     * @note Accessing the window after this functional call is UB.
+     */
+    void destroy() noexcept;
+
+    /**
+     * @brief Get a pointer to the underlying SDL representation.
+     * @return A pointer to the underlying SDL_Window.
+     */
+    constexpr auto native_handle() const noexcept { return window_; }
+
+    /**
      * @brief Checks if the window is in a valid state.
      * @return True if valid, false if not.
      */
@@ -90,23 +107,6 @@ public:
      * @note This copy operation has an explicit name to avoid unnecessary copying due to a copy constructor call.
     */
     static window copy(window const& other) noexcept;
-
-    /**
-     * @brief The destructor.
-     */
-    ~window() noexcept;
-
-    /**
-     * @brief Get a pointer to the underlying SDL representation.
-     * @return A pointer to the underlying SDL_Window.
-     */
-    constexpr auto native_handle() const noexcept { return window_; }
-
-    /**
-     * @brief Destroy the underlying window object.
-     * @note Accessing the window after this functional call is UB.
-     */
-    void destroy() noexcept;
 
     /**
      * @brief Gets the size of the window's borders.

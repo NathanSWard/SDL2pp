@@ -1,6 +1,6 @@
 # SDL2++ - A modern C++20 wrapper around SDL2
 
-## Comparison between using the SDL2 API vs the SDL++ API
+## Comparison between using the SDL2 API vs the SDL2++ API
 ### SDL2
 ```cpp
 int main(int, char**) {
