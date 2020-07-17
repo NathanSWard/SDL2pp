@@ -234,7 +234,7 @@ public:
      * @param srcrect
      * @param dst
      * @param dstrect
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool blit(rect<int> const& srcrect, surface& dst, rect<int>& dstrect) noexcept;
 
@@ -242,14 +242,14 @@ public:
      * @brief
      * @param dst
      * @param dstrect
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool blit(surface& dst, rect<int>& dstrect) noexcept;
 
     /**
      * @brief
      * @param dst
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool blit(surface& dst) noexcept;
 
@@ -257,7 +257,7 @@ public:
      * @brief
      * @param srcrect
      * @param dst
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool blit(rect<int> const& srcrect, surface& dst) noexcept;
 
@@ -266,7 +266,7 @@ public:
      * @param srcrect
      * @param dst
      * @param dstrect
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool blit_scaled(rect<int> const& srcrect, surface& dst, rect<int>& dstrect) noexcept;
 
@@ -274,14 +274,14 @@ public:
      * @brief
      * @param dst
      * @param dstrect
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool blit_scaled(surface& dst, rect<int>& dstrect) noexcept;
 
     /**
      * @brief
      * @param dst
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool blit_scaled(surface& dst) noexcept;
 
@@ -289,7 +289,7 @@ public:
      * @brief
      * @param srcrect
      * @param dst
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool blit_scaled(rect<int> const& srcrect, surface& dst) noexcept;
 
@@ -298,7 +298,7 @@ public:
      * @param srcrect
      * @param dst
      * @param dstrect
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool lower_blit(rect<int> const& srcrect, surface& dst, rect<int>& dstrect) noexcept;
 
@@ -306,14 +306,14 @@ public:
      * @brief
      * @param dst
      * @param dstrect
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool lower_blit(surface& dst, rect<int>& dstrect) noexcept;
 
     /**
      * @brief
      * @param dst
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool lower_blit(surface& dst) noexcept;
 
@@ -321,7 +321,7 @@ public:
      * @brief
      * @param srcrect
      * @param dst
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool lower_blit(rect<int> const& srcrect, surface& dst) noexcept;
 
@@ -330,7 +330,7 @@ public:
      * @param srcrect
      * @param dst
      * @param dstrect
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool lower_blit_scaled(rect<int> const& srcrect, surface& dst, rect<int>& dstrect) noexcept;
 
@@ -338,14 +338,14 @@ public:
      * @brief
      * @param dst
      * @param dstrect
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool lower_blit_scaled(surface& dst, rect<int>& dstrect) noexcept;
 
     /**
      * @brief
      * @param dst
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool lower_blit_scaled(surface& dst) noexcept;
 
@@ -353,7 +353,7 @@ public:
      * @brief
      * @param srcrect
      * @param dst
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool lower_blit_scaled(rect<int> const& srcrect, surface& dst) noexcept;
 
@@ -361,14 +361,14 @@ public:
      * @brief
      * @param rect
      * @param color 
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool fill_rect(rect<int> const& rect, pixel_color color) noexcept;
 
     /**
      * @brief
      * @param color 
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool fill(pixel_color color) noexcept;
 
@@ -376,14 +376,14 @@ public:
      * @brief
      * @param rects
      * @param color 
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool fill_rects(std::span<rect<int> const> rects, pixel_color color) noexcept;
 
     /**
      * @brief
      * @param fmt
-     * @return
+     * @return True if succeeded, false if failed.
      */
     bool convert(sdl2::pixel_format const& fmt) noexcept;
 
@@ -420,62 +420,62 @@ public:
 
     /**
      * @brief
-     * @return 
+     * @return True if succeeded, false if failed. 
      */
     bool set_clip_rect(rect<int> const& rect) noexcept;
 
     /**
      * @brief
-     * @return 
+     * @return True if succeeded, false if failed.
      */
-    void disable_clipping() noexcept;
+    bool disable_clipping() noexcept;
 
     /**
      * @brief
      * @param color
-     * @return 
+     * @return True if succeeded, false if failed. 
      */
     bool set_color_key(bool enable, pixel_color color) noexcept;
 
     /**
      * @brief
      * @param alpha
-     * @return 
+     * @return True if succeeded, false if failed. 
      */
     bool set_alpha_mod(std::uint8_t const alpha) noexcept;
 
     /**
      * @brief
      * @param mode
-     * @return 
+     * @return True if succeeded, false if failed.  
      */
     bool set_blend_mode(sdl2::blend_mode mode) noexcept;
 
     /**
      * @brief
      * @param rgb
-     * @return 
+     * @return True if succeeded, false if failed.  
      */
     bool set_color_mode(rgb<std::uint8_t> rgb) noexcept;
 
     /**
      * @brief
      * @param p
-     * @return 
+     * @return True if succeeded, false if failed.  
      */
     bool set_palette(palette_view p) noexcept;
 
     /**
      * @brief
      * @param enable
-     * @return 
+     * @return True if succeeded, false if failed.  
      */
     bool set_rle(bool enable) noexcept;
 
     /**
      * @brief
      * @param file
-     * @return 
+     * @return True if succeeded, false if failed.  
      */
     bool save_bmp_to_file(null_term_string file) const noexcept;
 };
@@ -485,7 +485,7 @@ public:
  * @param wh 
  * @param src
  * @param dst
- * @return
+ * @return True if succeeded, false if failed. 
  */
 bool convert_pixels(wh<int> wh, surface const& src, surface& dst) noexcept;
 

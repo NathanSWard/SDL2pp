@@ -191,8 +191,8 @@ bool surface::set_clip_rect(rect<int> const& rect) noexcept {
     return SDL_SetClipRect(surface_, rect.native_handle()) == SDL_TRUE;
 }
 
-void surface::disable_clipping() noexcept {
-    SDL_SetClipRect(surface_, nullptr);
+bool surface::disable_clipping() noexcept {
+    return SDL_SetClipRect(surface_, nullptr) == SDL_TRUE;
 }
 
 bool surface::set_color_key(bool const enable, pixel_color const color) noexcept {
