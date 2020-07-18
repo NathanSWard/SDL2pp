@@ -256,7 +256,7 @@ public:
  * @brief A wrapper of a null-terminated string.
  */ 
 class null_term_string {
-    char const* str_ = nullptr;
+    char const* str_ = "";
     std::size_t size_ = 0;
 
 public:

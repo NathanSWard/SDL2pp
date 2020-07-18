@@ -272,27 +272,37 @@ struct event_queue_t {
  */
 inline constexpr event_queue_t event_queue{};
 
+namespace keyboard_events {
+
+inline constexpr std::size_t num_scancodes = SDL_NUM_SCANCODES;
+
+inline std::span<std::uint8_t const, num_scancodes> get_keyboard_state() noexcept {
+    return std::span<std::uint8_t const, num_scancodes>{SDL_GetKeyboardState(nullptr), num_scancodes};
+}
+
+} // namespace keyboard_events
+
 namespace touch_events {
 
 /**
  * @brief Get the number of registered touch devices.
  * @return The number of registered touch devices. 
  */
-int get_num_touch_devices() noexcept;
+inline int get_num_touch_devices() noexcept;
 
 /**
  * @brief Get the number of active fingers for a given touch device.
  * @param id The ID of a touch device.
  * @return The number of active fingers for the touch device on success or 0 on failure.
  */
-int get_num_touch_fingers(SDL_TouchID id) noexcept;
+inline int get_num_touch_fingers(SDL_TouchID id) noexcept;
 
 /**
  * @brief Get the touch ID with the given index.
  * @param index The touch device index
  * @return The touch ID with the given index on success or 0 if the index is invalid. 
  */
-SDL_TouchID get_touch_device(int index) noexcept;
+inline SDL_TouchID get_touch_device(int index) noexcept;
 
 /**
  * @brief Get the finger object for a specified touch device ID and finger index.
@@ -300,20 +310,20 @@ SDL_TouchID get_touch_device(int index) noexcept;
  * @param index The index of the requested finger.
  * @return The SDL_Finger object or an empty optional_ref in no object at the given ID and index could be found.
  */
-optional_ref<SDL_Finger> get_touch_finger(SDL_TouchID id, int index) noexcept;
+inline optional_ref<SDL_Finger> get_touch_finger(SDL_TouchID id, int index) noexcept;
 
 /**
  * @brief Begins recording a gesture on the specified touch device.
  * @param id The touch device id.
  * @return True if succeeded, false if failed.
  */ 
-bool record_gesture(SDL_TouchID id) noexcept;
+inline bool record_gesture(SDL_TouchID id) noexcept;
 
 /**
  * @brief Begins recording a gesture on all touch devices.
  * @return True if succeeded, false if failed.
  */ 
-bool record_all_gestures() noexcept;
+inline bool record_all_gestures() noexcept;
 
 /**
  * @brief Load dollar gesture templates from a file.
@@ -321,14 +331,14 @@ bool record_all_gestures() noexcept;
  * @param src An SDL_RWops to load from.
  * @return The number of loaded templates on success an number <= 0 on failure. 
  */
-int load_dollar_templates(SDL_TouchID id, SDL_RWops& src) noexcept;
+inline int load_dollar_templates(SDL_TouchID id, SDL_RWops& src) noexcept;
 
 /**
  * @brief Saves all currently loaded dollar gesture templates.
  * @param dst An SDL_RWops to save to.
  * @return The number of saved templates or 0 on failure.
  */
-int save_all_dollar_templates(SDL_RWops& dst) noexcept;
+inline int save_all_dollar_templates(SDL_RWops& dst) noexcept;
 
 /**
  * @brief Save a currently loaded Dollar Gesture template.
@@ -336,7 +346,7 @@ int save_all_dollar_templates(SDL_RWops& dst) noexcept;
  * @param dst An SDL_RWops to save to
  * @return True on success, false if failed.
  */
-bool save_dollar_template(SDL_GestureID id, SDL_RWops& dst) noexcept;
+inline bool save_dollar_template(SDL_GestureID id, SDL_RWops& dst) noexcept;
 
 } // namespace touch_events
 
