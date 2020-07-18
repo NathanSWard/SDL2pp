@@ -1,4 +1,4 @@
-#include "../include/window.hpp"
+#include "../include/sdl2/window.hpp"
 
 using namespace sdl2;
 

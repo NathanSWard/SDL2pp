@@ -1,8 +1,8 @@
 #pragma once
 
-#include <memory>
 #include <cassert>
 #include <concepts>
+#include <memory>
 #include <string>
 #include <type_traits>
 
@@ -91,7 +91,7 @@ concept invocable_r = std::is_invocable_r_v<R, Fn, Args...>;
 template<typename R, typename ...Args>
 class function_ref<R(Args...)> {
     R (*callback)(std::intptr_t callable, Args... args) = nullptr;
-    std::intptr_t callable;
+    std::intptr_t callable{};
 
     template<typename Callable>
     static R callback_fn(std::intptr_t callable, Args... args) {
@@ -129,6 +129,10 @@ public:
      * @return A bool indicating if this referes to a valid function object.
      */
     constexpr explicit operator bool() const noexcept { return callback; }
+
+    constexpr std::intptr_t func_addr() const noexcept {
+        return callable;
+    } 
 };
 
 /**

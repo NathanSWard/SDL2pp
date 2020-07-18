@@ -1,25 +1,14 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+
 #include <concepts>
-#include <cstdint>
-#include <optional>
 #include <span>
+
 #include "enums.hpp"
 #include "util.hpp"
 
 namespace sdl2 {
-
-namespace colors {
-    inline constexpr auto red = rgba<>{255, 0, 0, 255};
-    inline constexpr auto orange = rgba<>{255, 165, 0, 255};
-    inline constexpr auto yellow = rgba<>{255, 255, 0, 255};
-    inline constexpr auto green = rgba<>{0, 128, 0, 255};
-    inline constexpr auto blue = rgba<>{0, 0, 255, 255};
-    inline constexpr auto purple = rgba<>{128, 0, 128, 255};
-    inline constexpr auto black = rgba<>{0, 0, 0, 255};
-    inline constexpr auto white = rgba<>{255, 255, 255, 255};
-}
 
 template<bool Const>
 class basic_palette_view {
@@ -28,7 +17,8 @@ class basic_palette_view {
 public:
     template<class P>
     requires std::same_as<SDL_Palette, std::remove_cvref_t<P>>
-    constexpr basic_palette_view(P&& palette) noexcept : palette_(std::addressof(palette)) {}
+    constexpr basic_palette_view(P&& palette) noexcept 
+        : palette_(std::addressof(palette)) {}
 
     constexpr basic_palette_view(basic_palette_view const&) noexcept = default;
     constexpr basic_palette_view(basic_palette_view&&) noexcept = default;
@@ -58,14 +48,12 @@ class pixel_format {
     SDL_PixelFormat* fmt_;
 
 public:
-    static std::optional<pixel_format> create(pixel_format_enum const fmt) noexcept {
-        if (auto const pf = SDL_AllocFormat(static_cast<std::uint32_t>(fmt)); pf != nullptr)
-            return pixel_format{*pf};
-        return {};
-    }
+    pixel_format(pixel_format_enum const fmt) noexcept 
+        : fmt_{SDL_AllocFormat(static_cast<std::uint32_t>(fmt))}
+    {}
 
-    constexpr pixel_format(SDL_PixelFormat& fmt) noexcept 
-        : fmt_(std::addressof(fmt)) {}
+    constexpr pixel_format(SDL_PixelFormat* fmt) noexcept 
+        : fmt_{fmt} {}
 
     ~pixel_format() noexcept {
         if (fmt_)
@@ -109,11 +97,13 @@ class basic_pixel_format_view {
 public:
     template<class PF>
     requires std::same_as<SDL_PixelFormat, std::remove_cvref_t<PF>>
-    constexpr basic_pixel_format_view(PF&& fmt) noexcept : fmt_(std::addressof(fmt)) {}
+    constexpr basic_pixel_format_view(PF* fmt) noexcept 
+        : fmt_{fmt} {}
 
     template<class PF>
     requires std::same_as<pixel_format, std::remove_cvref_t<PF>>
-    constexpr basic_pixel_format_view(PF&& fmt) noexcept : fmt_(fmt.native_handle()) {}
+    constexpr basic_pixel_format_view(PF&& fmt) noexcept   
+        : fmt_(fmt.native_handle()) {}
 
     basic_pixel_format_view(std::nullptr_t) = delete;
 
@@ -150,8 +140,8 @@ public:
     constexpr std::uint32_t amask() const noexcept { return fmt_->Amask; }
 };
 
-basic_pixel_format_view(SDL_PixelFormat&) -> basic_pixel_format_view<false>;
-basic_pixel_format_view(SDL_PixelFormat const&) -> basic_pixel_format_view<true>;
+basic_pixel_format_view(SDL_PixelFormat*) -> basic_pixel_format_view<false>;
+basic_pixel_format_view(SDL_PixelFormat const*) -> basic_pixel_format_view<true>;
 basic_pixel_format_view(pixel_format&) -> basic_pixel_format_view<false>;
 basic_pixel_format_view(pixel_format const&) -> basic_pixel_format_view<true>;
 
@@ -194,4 +184,4 @@ public:
     } 
 };
 
-}
+} // namespace sdl2

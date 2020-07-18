@@ -1,4 +1,4 @@
-#include "../include/message_box.hpp"
+#include "../include/sdl2/message_box.hpp"
 
 using namespace sdl2;
 

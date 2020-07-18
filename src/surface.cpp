@@ -1,4 +1,4 @@
-#include "../include/surface.hpp"
+#include "../include/sdl2/surface.hpp"
 
 #include <SDL2/SDL_image.h>
 
@@ -36,7 +36,7 @@ surface::~surface() noexcept {
 
 constexpr const_pixel_format_view surface::pixel_format() const noexcept { 
     SDL2_ASSERT(surface_->format != nullptr);
-    return {*(surface_->format)}; 
+    return {surface_->format}; 
 }
 
 constexpr int surface::width() const noexcept { return surface_->w; }

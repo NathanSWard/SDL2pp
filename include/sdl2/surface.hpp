@@ -5,7 +5,7 @@
 #include <atomic>
 #include <optional>
 
-#include "color.hpp"
+#include "pixel.hpp"
 #include "shapes.hpp"
 #include "util.hpp"
 
