@@ -110,7 +110,7 @@ public:
      */
     template<typename Callable>
     requires (!std::same_as<function_ref, std::remove_cvref_t<Callable>> && invocable_r<R, Callable, Args...>)
-    constexpr function_ref(Callable&& callable)
+    constexpr function_ref(Callable&& callable) noexcept
         : callback(callback_fn<std::remove_reference_t<Callable>>)
         , callable(reinterpret_cast<std::intptr_t>(std::addressof(callable))) 
     {}
@@ -129,10 +129,6 @@ public:
      * @return A bool indicating if this referes to a valid function object.
      */
     constexpr explicit operator bool() const noexcept { return callback; }
-
-    constexpr std::intptr_t func_addr() const noexcept {
-        return callable;
-    } 
 };
 
 /**

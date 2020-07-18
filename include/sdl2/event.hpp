@@ -225,35 +225,44 @@ struct event_queue_t {
 
     /**
      * @brief Add a callback to be triggered when an event is added to the event queue.
-     * @param fn The callback.
-     * @warning The lifetime of the passed in function must be maintined until del_event_watch is called.
+     * @param callback The callback.
+     * @warning The lifetime of the callback must be maintined until `del_event_watch` is invoked on the callback.
      */
-    static void add_event_watch(function_ref<void(SDL_Event&)> const fn) noexcept;
+    template<class F>
+    requires invocable_r<void, F, SDL_Event&>
+    static void add_event_watch(F& callback) noexcept;
 
     /**
      * @brief Remove an event watch callback initally added with `add_event_watch`.
-     * @param fn The callback to be deleted.
+     * @param callback The callback to be deleted.
      */
-    static void del_event_watch(function_ref<void(SDL_Event&)> const fn) noexcept;
+    template<class F>
+    requires invocable_r<void, F, SDL_Event&>
+    static void del_event_watch(F& callback) noexcept;
 
     /**
      * @brief Set a filter to process all events before they change internal state and are posted to the event queue.
-     * @param fn The filter function which returns true if the event should be added, false if the event should be ignored.
-     * @warning The lifetime of the passed in function must be maintined until del_event_watch is called.
+     * @param callback The filter function which returns true if the event should be added, false if the event should be ignored.
+     * @warning The lifetime of the callback must be maintained until the event filter is changed.
      */
-    static void set_event_filter(function_ref<bool(SDL_Event&)> const fn) noexcept;
+    template<class F>
+    requires invocable_r<bool, F, SDL_Event&>
+    static void set_event_filter(F& callback) noexcept;
 
-    /**
-     * @brief Get the current event filter.
-     * @return The current event filter, or a null function_ref if not filter is set.
-     */
-    static function_ref<bool(SDL_Event&)> get_event_filter() noexcept;
+    // TODO: Fix this functin all. Can't necessarily return a function_ref.
+    ///**
+    // * @brief Get the current event filter.
+    // * @return The current event filter, or a null function_ref if no filter is set.
+    // */
+    //static function_ref<bool(SDL_Event&)> get_event_filter() noexcept;
 
     /**
      * @brief Runs the filter function on the current event queue.
      * @param fn A filter function returning false if the SDL_Event should be removed.
      */
-    static void filter_events(function_ref<bool(SDL_Event&)> fn) noexcept;
+    template<class F>
+    requires invocable_r<bool, F, SDL_Event&>
+    static void filter_events(F&& fn) noexcept;
 };
 
 
@@ -362,5 +371,44 @@ std::optional<SDL_Event> event_queue_t::wait_until(std::chrono::time_point<Clock
         return {};
     return wait_for(tp - now);
 }  
+
+namespace detail {
+
+template<class F>
+constexpr static int _event_watch_impl(void* fn, SDL_Event* event) noexcept(std::is_nothrow_invocable_r_v<void, F, SDL_Event&>) {
+    (*static_cast<F*>(fn))(*event);
+    return 0;
+}
+
+template<class F>
+constexpr static int _event_filter_impl(void* fn, SDL_Event* event) noexcept(std::is_nothrow_invocable_r_v<bool, F, SDL_Event&>) {
+    return static_cast<int>((*static_cast<F*>(fn))(*event));
+}
+
+} // namespace detail
+
+template<class F>
+requires invocable_r<void, F, SDL_Event&>
+void event_queue_t::add_event_watch(F& fn) noexcept {
+    SDL_AddEventWatch(detail::_event_watch_impl<F>, std::addressof(fn));
+}
+
+template<class F>
+requires invocable_r<void, F, SDL_Event&>
+void event_queue_t::del_event_watch(F& fn) noexcept {
+    SDL_DelEventWatch(detail::_event_watch_impl<F>, std::addressof(fn));
+}
+
+template<class F>
+requires invocable_r<bool, F, SDL_Event&>
+void event_queue_t::set_event_filter(F& fn) noexcept {
+    SDL_SetEventFilter(detail::_event_filter_impl<F>, std::addressof(fn));
+}
+
+template<class F>
+requires invocable_r<bool, F, SDL_Event&>
+void event_queue_t::filter_events(F&& fn) noexcept {
+    SDL_FilterEvents(detail::_event_filter_impl<F>, std::addressof(fn));
+}
 
 } // namespace sdl2

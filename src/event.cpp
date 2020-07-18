@@ -63,38 +63,15 @@ bool event_queue_t::quit_requested() noexcept {
     return SDL_QuitRequested() == SDL_TRUE;
 }
 
-static int _event_watch_impl(void* const fn, SDL_Event* event) noexcept {
-    (*reinterpret_cast<function_ref<void(SDL_Event&)>*>(fn))(*event);
-    return 0;
-}
-
-static int _event_filter_impl(void* userdata, SDL_Event* event) noexcept {
-    return static_cast<int>((*reinterpret_cast<function_ref<bool(SDL_Event&)>*>(userdata))(*event));
-}
-
-void event_queue_t::add_event_watch(function_ref<void(SDL_Event&)> const fn) noexcept {
-    SDL_AddEventWatch(_event_watch_impl, reinterpret_cast<void*>(fn.func_addr()));
-}
-
-void event_queue_t::del_event_watch(function_ref<void(SDL_Event&)> const fn) noexcept {
-    SDL_DelEventWatch(_event_filter_impl, reinterpret_cast<void*>(fn.func_addr()));
-}
-
-void event_queue_t::set_event_filter(function_ref<bool(SDL_Event&)> const fn) noexcept {
-    SDL_SetEventFilter(_event_filter_impl, reinterpret_cast<void*>(fn.func_addr()));
-}
-
+/*
 function_ref<bool(SDL_Event&)> event_queue_t::get_event_filter() noexcept {
     SDL_EventFilter filter;
     void* userdata;
     if (SDL_GetEventFilter(&filter, &userdata) == SDL_TRUE)
-        return *reinterpret_cast<function_ref<bool(SDL_Event&)>*>(userdata);
+        return *static_cast<function_ref<bool(SDL_Event&)>*>(userdata);
     return {};
-} 
-
-void event_queue_t::filter_events(function_ref<bool(SDL_Event&)> fn) noexcept {
-    SDL_FilterEvents(_event_filter_impl, &fn);
 }
+*/
 
 int get_num_touch_devices() noexcept {
     return SDL_GetNumTouchDevices();
