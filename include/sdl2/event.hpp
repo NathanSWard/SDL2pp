@@ -8,6 +8,7 @@
 #include <span>
 
 #include "util.hpp"
+#include "window.hpp"
 
 namespace sdl2 {
 
@@ -15,6 +16,9 @@ template<class It, class Sent>
 concept sdl_event_output_pair = std::contiguous_iterator<It> && std::output_iterator<It, SDL_Event> && std::sentinel_for<It, Sent>;
 
 struct event_queue_t {
+
+    constexpr explicit event_queue_t() noexcept = default;
+
     /**
     * @brief Checks to see if an event type exists in the event queue.
     * @param type The event type to check for.
@@ -272,83 +276,121 @@ struct event_queue_t {
  */
 inline constexpr event_queue_t event_queue{};
 
-namespace keyboard_events {
-
-inline constexpr std::size_t num_scancodes = SDL_NUM_SCANCODES;
-
-inline std::span<std::uint8_t const, num_scancodes> get_keyboard_state() noexcept {
-    return std::span<std::uint8_t const, num_scancodes>{SDL_GetKeyboardState(nullptr), num_scancodes};
-}
-
-} // namespace keyboard_events
-
-namespace touch_events {
 
 /**
- * @brief Get the number of registered touch devices.
- * @return The number of registered touch devices. 
+ * @brief The number of available scancodes. 
  */
-inline int get_num_touch_devices() noexcept;
+static constexpr std::size_t NUM_SCANCODES = SDL_NUM_SCANCODES;
 
-/**
- * @brief Get the number of active fingers for a given touch device.
- * @param id The ID of a touch device.
- * @return The number of active fingers for the touch device on success or 0 on failure.
- */
-inline int get_num_touch_fingers(SDL_TouchID id) noexcept;
+struct keyboard_t {
 
-/**
- * @brief Get the touch ID with the given index.
- * @param index The touch device index
- * @return The touch ID with the given index on success or 0 if the index is invalid. 
- */
-inline SDL_TouchID get_touch_device(int index) noexcept;
+    constexpr explicit keyboard_t() noexcept = default;
 
-/**
- * @brief Get the finger object for a specified touch device ID and finger index.
- * @param id The ID of the requested touch device.
- * @param index The index of the requested finger.
- * @return The SDL_Finger object or an empty optional_ref in no object at the given ID and index could be found.
- */
-inline optional_ref<SDL_Finger> get_touch_finger(SDL_TouchID id, int index) noexcept;
+    /**
+     * @brief Gets a snapshot of the current state of the keyboard.
+     * @return A span of key states, 1 representing pressed, 0 not. Indexes into the array are obtained via SDL_Scancodes.
+     */
+    static std::span<std::uint8_t const, NUM_SCANCODES> state() noexcept;
 
-/**
- * @brief Begins recording a gesture on the specified touch device.
- * @param id The touch device id.
- * @return True if succeeded, false if failed.
- */ 
-inline bool record_gesture(SDL_TouchID id) noexcept;
+    /**
+     * @brief Get the current key modifier state for the keyboard.
+     * @return An OR'd combination of the modifier keys for the keyboard.
+     */
+    static SDL_Keymod mod_state() noexcept;
 
-/**
- * @brief Begins recording a gesture on all touch devices.
- * @return True if succeeded, false if failed.
- */ 
-inline bool record_all_gestures() noexcept;
+    /**
+     * @brief Sets the current key modifier state for the keyboard.
+     * @param mod The desired SDL_Keymod for the keyboard.
+     */
+    static void set_mod_state(SDL_Keymod mod) noexcept;
 
-/**
- * @brief Load dollar gesture templates from a file.
- * @param id A touch id.
- * @param src An SDL_RWops to load from.
- * @return The number of loaded templates on success an number <= 0 on failure. 
- */
-inline int load_dollar_templates(SDL_TouchID id, SDL_RWops& src) noexcept;
+    /**
+     * @brief Checks whether the platform has some screen keyboard support.
+     * @return True if supported, false if not.
+     */
+    static bool has_screen_support() noexcept;
 
-/**
- * @brief Saves all currently loaded dollar gesture templates.
- * @param dst An SDL_RWops to save to.
- * @return The number of saved templates or 0 on failure.
- */
-inline int save_all_dollar_templates(SDL_RWops& dst) noexcept;
+    /**
+     * @brief Checks whether the screen keyboard is show for a given window.
+     * @param win The window for which screen keyboard to query.
+     * @return True if show, false if not.
+     */
+    static bool is_screen_shown(window const& win) noexcept;
+};
 
-/**
- * @brief Save a currently loaded Dollar Gesture template.
- * @param id A gesture id.
- * @param dst An SDL_RWops to save to
- * @return True on success, false if failed.
- */
-inline bool save_dollar_template(SDL_GestureID id, SDL_RWops& dst) noexcept;
+inline constexpr keyboard_t keyboard{};
 
-} // namespace touch_events
+struct touch_t {
+
+    constexpr explicit touch_t() noexcept = default;
+
+    /**
+     * @brief Get the number of registered touch devices.
+     * @return The number of registered touch devices. 
+     */
+    static int num_devices() noexcept;
+
+    /**
+     * @brief Get the number of active fingers for a given touch device.
+     * @param id The ID of a touch device.
+     * @return The number of active fingers for the touch device on success or 0 on failure.
+     */
+    static int num_fingers(SDL_TouchID id) noexcept;
+
+    /**
+     * @brief Get the touch ID with the given index.
+     * @param index The touch device index
+     * @return The touch ID with the given index on success or 0 if the index is invalid. 
+     */
+    static SDL_TouchID get_device(int index) noexcept;
+
+    /**
+     * @brief Get the finger object for a specified touch device ID and finger index.
+     * @param id The ID of the requested touch device.
+     * @param index The index of the requested finger.
+     * @return The SDL_Finger object or an empty optional_ref in no object at the given ID and index could be found.
+     */
+    static optional_ref<SDL_Finger> get_finger(SDL_TouchID id, int index) noexcept;
+
+    /**
+     * @brief Begins recording a gesture on the specified touch device.
+     * @param id The touch device id.
+     * @return True if succeeded, false if failed.
+     */ 
+    static bool record_gesture(SDL_TouchID id) noexcept;
+
+    /**
+     * @brief Begins recording a gesture on all touch devices.
+     * @return True if succeeded, false if failed.
+     */ 
+    static bool record_all_gestures() noexcept;
+
+    /**
+     * @brief Load dollar gesture templates from a file.
+     * @param id A touch id.
+     * @param src An SDL_RWops to load from.
+     * @return The number of loaded templates on success an number <= 0 on failure. 
+     */
+    static int load_dollar_templates(SDL_TouchID id, SDL_RWops& src) noexcept;
+
+    /**
+     * @brief Saves all currently loaded dollar gesture templates.
+     * @param dst An SDL_RWops to save to.
+     * @return The number of saved templates or 0 on failure.
+     */
+    static int save_all_dollar_templates(SDL_RWops& dst) noexcept;
+
+    /**
+     * @brief Save a currently loaded Dollar Gesture template.
+     * @param id A gesture id.
+     * @param dst An SDL_RWops to save to
+     * @return True on success, false if failed.
+     */
+    static bool save_dollar_template(SDL_GestureID id, SDL_RWops& dst) noexcept;
+
+};
+
+inline constexpr touch_t touch{};
 
 // event_queue_t templated method implementations.
 template<class It, class Sent>

@@ -1,7 +1,6 @@
 #include "../include/sdl2/event.hpp"
 
 using namespace sdl2;
-using namespace sdl2::touch_events;
 
 bool event_queue_t::has(SDL_EventType const type) noexcept {
     return SDL_HasEvent(type) == SDL_TRUE;
@@ -73,40 +72,60 @@ function_ref<bool(SDL_Event&)> event_queue_t::get_event_filter() noexcept {
 }
 */
 
-int get_num_touch_devices() noexcept {
+std::span<std::uint8_t const, NUM_SCANCODES> keyboard_t::state() noexcept {
+    return std::span<std::uint8_t const, NUM_SCANCODES>{SDL_GetKeyboardState(nullptr), NUM_SCANCODES};
+}
+
+SDL_Keymod keyboard_t::mod_state() noexcept {
+    return SDL_GetModState();
+}
+
+void keyboard_t::set_mod_state(SDL_Keymod const mod) noexcept {
+    SDL_SetModState(mod);
+}
+
+bool keyboard_t::has_screen_support() noexcept {
+    return SDL_HasScreenKeyboardSupport() == SDL_TRUE;
+}
+
+bool keyboard_t::is_screen_shown(window const& win) noexcept {
+    return SDL_IsScreenKeyboardShown(win.native_handle()) == SDL_TRUE;
+}
+
+int touch_t::num_devices() noexcept {
     return SDL_GetNumTouchDevices();
 }
 
-int get_num_touch_fingers(SDL_TouchID const id) noexcept {
+int touch_t::num_fingers(SDL_TouchID const id) noexcept {
     return SDL_GetNumTouchFingers(id);
 }
 
-SDL_TouchID get_touch_device(int const index) noexcept {
+SDL_TouchID touch_t::get_device(int const index) noexcept {
     return SDL_GetTouchDevice(index);
 }
 
-optional_ref<SDL_Finger> get_touch_finger(SDL_TouchID const id, int const index) noexcept {
+optional_ref<SDL_Finger> touch_t::get_finger(SDL_TouchID const id, int const index) noexcept {
     if (auto const finger = SDL_GetTouchFinger(id, index); finger != nullptr)
         return *finger;
     return {};
 }
 
-bool record_gesture(SDL_TouchID const id) noexcept {
+bool touch_t::record_gesture(SDL_TouchID const id) noexcept {
     return SDL_RecordGesture(id) == 1;
 }
 
-bool record_all_gestures() noexcept {
+bool touch_t::record_all_gestures() noexcept {
     return SDL_RecordGesture(-1) == 1;
 }
 
-int load_dollar_templates(SDL_TouchID const id, SDL_RWops& src) noexcept {
+int touch_t::load_dollar_templates(SDL_TouchID const id, SDL_RWops& src) noexcept {
     return SDL_LoadDollarTemplates(id, &src);
 }
 
-int save_all_dollar_templates(SDL_RWops& dst) noexcept {
+int touch_t::save_all_dollar_templates(SDL_RWops& dst) noexcept {
     return SDL_SaveAllDollarTemplates(&dst);
 } 
 
-bool save_dollar_template(SDL_GestureID const id, SDL_RWops& dst) noexcept {
+bool touch_t::save_dollar_template(SDL_GestureID const id, SDL_RWops& dst) noexcept {
     return SDL_SaveDollarTemplate(id, &dst) == 1;
 }
