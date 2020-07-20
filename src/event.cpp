@@ -1,4 +1,4 @@
-#include "../include/sdl2/event.hpp"
+#include "sdl2++/event.hpp"
 
 using namespace sdl2;
 

@@ -65,3 +65,50 @@ int main(int, char**) {
     }
 }
 ```
+```
+
+for it work correctly; the two are set in the [`cmake/Conan.cmake` file](cmake/Conan.cmake)).
+
+## Generating the documentation
+
+In order to generate documentation for the project, you need to configure the build
+to use Doxygen. This is easily done, by modifying the workflow shown above as follows:
+
+```bash
+mkdir build/ && cd build/
+cmake .. -D<project_name>_ENABLE_DOXYGEN=1 -DCMAKE_INSTALL_PREFIX=/absolute/path/to/custom/install/directory
+cmake --build . --target doxygen-docs
+```
+
+> ***Note:*** *This will generate a `docs/` directory in the **project's root directory**.*
+
+## Running the tests
+
+By default, the template uses [Google Test](https://github.com/google/googletest/)
+for unit testing. Unit testing can be disabled in the options, by setting the
+`ENABLE_UNIT_TESTING` (from
+[cmake/StandardSettings.cmake](cmake/StandardSettings.cmake)) to be false. To run
+the tests, simply use CTest, from the build directory, passing the desire
+configuration for which to run tests for. An example of this procedure is:
+
+```bash
+cd build          # if not in the build directory already
+ctest -C Release  # or `ctest -C Debug` or any other configuration you wish to test
+
+# you can also run tests with the `-VV` flag for a more verbose output (i.e.
+#GoogleTest output as well)
+```
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our how you can
+become a contributor and the process for submitting pull requests to us.
+
+## Authors
+
+* **Nathan Ward** - [@nathansward](https://github.com/NathanSWard)
+
+## License
+
+This project is licensed under the [Unlicense](https://unlicense.org/) - see the
+[LICENSE](LICENSE) file for details
