@@ -1,10 +1,12 @@
 #pragma once
 
-#include <SDL2/SDL.h>
+#include "SDL.h"
+
 #include <concepts>
 #include <cstdint>
 #include <optional>
 #include <span>
+
 #include "enums.hpp"
 #include "util.hpp"
 

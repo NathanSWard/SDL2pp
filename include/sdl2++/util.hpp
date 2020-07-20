@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SDL.h"
+
 #include <cassert>
 #include <concepts>
 #include <memory>

@@ -120,13 +120,13 @@ message("Finished setting up include directories.")
 # Model project dependencies 
 #
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
 # Identify and link with the specific "packages" the project uses
 find_package(SDL2 REQUIRED)
-target_link_libraries(
-  ${PROJECT_NAME}
-  PUBLIC
-    SDL2    
-)
+find_package(SDL2_image REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+link_directories(${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 
 verbose_message("Successfully added all dependencies and linked against them.")
 

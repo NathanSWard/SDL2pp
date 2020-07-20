@@ -24,7 +24,7 @@ option(${PROJECT_NAME}_ENABLE_VCPKG "Enable the Vcpkg package manager for this p
 # Unit testing
 #
 
-option(${PROJECT_NAME}_ENABLE_UNIT_TESTING "Enable unit tests for the projects (from the `test` subfolder)." OFF)
+option(${PROJECT_NAME}_ENABLE_UNIT_TESTING "Enable unit tests for the projects (from the `test` subfolder)." ON)
 
 #
 # Static analyzers

@@ -15,7 +15,7 @@ verbose_message("Adding tests under ${CMAKE_PROJECT_NAME}Tests...")
 # Set the sources for the unit tests and add the executable(s)
 #
 
-set(test_sources 
+set(test_sources
   src/test.cpp
 )
 add_executable(${PROJECT_NAME} ${test_sources})
@@ -40,6 +40,7 @@ endif()
 # Load the desired unit testing framework
 #
 
+# TODO: Add Catch2 Testing!!!!
 #find_package(Catch2 REQUIRED)
 #target_link_libraries(
 #  ${PROJECT_NAME} 
