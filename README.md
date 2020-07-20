@@ -65,9 +65,6 @@ int main(int, char**) {
     }
 }
 ```
-```
-
-for it work correctly; the two are set in the [`cmake/Conan.cmake` file](cmake/Conan.cmake)).
 
 ## Generating the documentation
 
@@ -83,13 +80,6 @@ cmake --build . --target doxygen-docs
 > ***Note:*** *This will generate a `docs/` directory in the **project's root directory**.*
 
 ## Running the tests
-
-By default, the template uses [Google Test](https://github.com/google/googletest/)
-for unit testing. Unit testing can be disabled in the options, by setting the
-`ENABLE_UNIT_TESTING` (from
-[cmake/StandardSettings.cmake](cmake/StandardSettings.cmake)) to be false. To run
-the tests, simply use CTest, from the build directory, passing the desire
-configuration for which to run tests for. An example of this procedure is:
 
 ```bash
 cd build          # if not in the build directory already
