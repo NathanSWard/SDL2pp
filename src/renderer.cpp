@@ -1,4 +1,4 @@
-#include "sdl2++/renderer.hpp"
+#include "sdl2pp/renderer.hpp"
 
 using namespace sdl2;
 

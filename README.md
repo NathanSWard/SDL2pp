@@ -1,4 +1,4 @@
-# SDL2++ - A modern C++20 wrapper around SDL2
+# sdl2pp - A modern C++20 wrapper around SDL2
 
 ## Comparison between using the SDL2 API vs the SDL2++ API
 ### SDL2
@@ -36,7 +36,7 @@ int main(int, char**) {
 }
 ```
 
-### SDL2++
+### sdl2pp
 ```cpp
 using namespcae sdl2;
 
@@ -45,7 +45,7 @@ int main(int, char**) {
     if (!sdl) 
         return EXIT_FAILURE;
     
-    window win("Hello SDL2++", window::pos_centered, {800, 800}, window_flags::RESIZABLE);
+    window win("Hello sdl2pp", window::pos_centered, {800, 800}, window_flags::RESIZABLE);
     if (!win)
         return EXIT_FAILURE;
     

@@ -1,5 +1,5 @@
-#include "sdl2++/texture.hpp"
-#include "sdl2++/renderer.hpp"
+#include "sdl2pp/texture.hpp"
+#include "sdl2pp/renderer.hpp"
 
 #include <SDL2/SDL_image.h>
 

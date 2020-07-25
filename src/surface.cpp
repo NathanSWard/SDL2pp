@@ -1,4 +1,4 @@
-#include "sdl2++/surface.hpp"
+#include "sdl2pp/surface.hpp"
 
 #include <SDL2/SDL_image.h>
 
