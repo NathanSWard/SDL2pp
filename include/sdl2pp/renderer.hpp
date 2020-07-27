@@ -557,9 +557,9 @@ inline std::pair<window, renderer> create_window_and_renderer(wh<int> wh, window
 template<class Rep>
 bool renderer::draw_line(point<Rep> const& from, point<Rep> const& to) noexcept {
     if constexpr (std::is_same_v<Rep, int>)
-        return SDL_RenderDrawLine(renderer_, from.x, from.y, to.x, to.y) == 0;
+        return SDL_RenderDrawLine(renderer_, from.x(), from.y(), to.x(), to.y()) == 0;
     else
-        return SDL_RenderDrawLineF(renderer_, from.x, from.y, to.x, to.y) == 0;
+        return SDL_RenderDrawLineF(renderer_, from.x(), from.y(), to.x(), to.y()) == 0;
 }
 
 template<class Rep>
@@ -573,9 +573,9 @@ bool renderer::draw_lines(std::span<point<Rep> const> const points) noexcept {
 template<class Rep>
 bool renderer::draw_point(point<Rep> const& p) noexcept {
     if constexpr (std::is_same_v<Rep, int>)
-        return SDL_RenderDrawPoint(renderer_, p.x, p.y) == 0;
+        return SDL_RenderDrawPoint(renderer_, p.x(), p.y()) == 0;
     else
-        return SDL_RenderDrawPointF(renderer_, p.x, p.y) == 0;
+        return SDL_RenderDrawPointF(renderer_, p.x(), p.y()) == 0;
 }
 
 template<class Rep>
